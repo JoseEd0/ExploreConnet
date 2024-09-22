@@ -1,5 +1,6 @@
 package dbp.exploreconnet.reservation.domain;
 
+import dbp.exploreconnet.itinerary.domain.Itinerary;
 import dbp.exploreconnet.place.domain.Place;
 import dbp.exploreconnet.user.domain.User;
 import jakarta.persistence.*;
@@ -30,4 +31,7 @@ public class Reservation {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    @ManyToOne
+    @JoinColumn(name = "itinerary_id", nullable = false)
+    private Itinerary itinerary;
 }

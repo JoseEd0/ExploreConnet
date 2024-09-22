@@ -1,6 +1,7 @@
 package dbp.exploreconnet.itinerary.domain;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import dbp.exploreconnet.reservation.domain.Reservation;
 import dbp.exploreconnet.user.domain.User;
 import jakarta.persistence.*;
@@ -20,8 +21,9 @@ public class Itinerary {
     @Column(nullable = false)
     private String name;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonIgnore
     private User user;
 
     @OneToMany(mappedBy = "itinerary", cascade = CascadeType.ALL, orphanRemoval = true)
