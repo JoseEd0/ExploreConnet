@@ -31,3 +31,16 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# Ignorar archivos y directorios fuera del proyecto
+../*
+
+# Ignorar archivos innecesarios del sistema y del entorno de desarrollo
+.DS_Store
+.Xilinx/
+.arduinoIDE/
+.bash_history
+.cache/
+.dbus-keyrings/
+.docker/
+.expo/
