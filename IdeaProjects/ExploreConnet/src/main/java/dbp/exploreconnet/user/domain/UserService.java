@@ -1,15 +1,12 @@
 package dbp.exploreconnet.user.domain;
 
-import dbp.exploreconnet.exceptions.ResourceNotFoundException;
+
 import dbp.exploreconnet.user.infrastructure.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+
 
 @Service
 public class UserService {
@@ -17,19 +14,20 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
-    @Bean(name = "UserDetailsService")
-    public UserDetailsService userDetailsService() {
-        return username -> {
-            User user = userRepository
-                    .findByEmail(username)
-                    .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-            return (UserDetails) user;
-        };
+    public User createUser(User user){
+        return userRepository.save(user);
+    }
+
+    public String login(User user) {
+        User existingUser = userRepository.findByEmail(user.getEmail());
+        if (existingUser != null && existingUser.getPassword().equals(user.getPassword())) {
+            return "Login Successful";
+        }
+        return "Invalid Credentials";
     }
 
     public User getUserById(Long id) {
-        return userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        return userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
     }
 
     public User updateUser(Long id, User user) {
@@ -47,7 +45,4 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public User findByEmail(String email) {
-        return userRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("User not found"));
-    }
 }
