@@ -20,12 +20,10 @@ import java.time.LocalDateTime;
 @Service
 @RequiredArgsConstructor
 public class AuthService {
+
     private final UserRepository userRepository;
-
     private final JwtService jwtService;
-
     private final PasswordEncoder passwordEncoder;
-
     private final ApplicationEventPublisher applicationEventPublisher;
 
     public JwtAuthResponseDto login(LoginDto logInDto) {
@@ -41,6 +39,7 @@ public class AuthService {
         return response;
     }
 
+
     public JwtAuthResponseDto signIn(SigninDto signinDto) {
         if (userRepository.findByEmail(signinDto.getEmail()).isPresent()) {
             throw new UserAlreadyExistException("Email already exist");
@@ -53,13 +52,13 @@ public class AuthService {
         user.setPassword(passwordEncoder.encode(signinDto.getPassword()));
         user.setFullName(signinDto.getName());
         user.setCreatedAt(LocalDateTime.now());
-
         user.setRole(signinDto.getRole());
 
         userRepository.save(user);
 
         JwtAuthResponseDto response = new JwtAuthResponseDto();
-        response.setToken(jwtService.generateToken(user));
+        jwtService.generateToken(user);
+        response.setMessage("Registro Exitoso");
         return response;
     }
 

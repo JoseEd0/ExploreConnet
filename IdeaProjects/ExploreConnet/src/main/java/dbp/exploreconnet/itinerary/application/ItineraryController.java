@@ -1,6 +1,5 @@
 package dbp.exploreconnet.itinerary.application;
 
-import dbp.exploreconnet.itinerary.domain.Itinerary;
 import dbp.exploreconnet.itinerary.domain.ItineraryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -16,22 +15,21 @@ public class ItineraryController {
     private ItineraryService itineraryService;
 
     @PostMapping
-    public ResponseEntity<Itinerary> createItinerary(@RequestBody Itinerary itinerary) {
-        if (itinerary.getUser() == null || itinerary.getUser().getId() == null) {
-            throw new IllegalArgumentException("User must be provided and cannot be null");
-        }
-        Itinerary savedItinerary = itineraryService.createItinerary(itinerary);
+    public ResponseEntity<ItineraryResponseDto> createItinerary(@RequestBody ItineraryRequestDto itineraryRequestDto) {
+        ItineraryResponseDto savedItinerary = itineraryService.createItinerary(itineraryRequestDto);
         return ResponseEntity.ok(savedItinerary);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Itinerary> getItineraryById(@PathVariable Long id) {
-        return ResponseEntity.ok(itineraryService.getItineraryById(id));
+    public ResponseEntity<ItineraryResponseDto> getItineraryById(@PathVariable Long id) {
+        ItineraryResponseDto itineraryResponseDto = itineraryService.getItineraryById(id);
+        return ResponseEntity.ok(itineraryResponseDto);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Itinerary> updateItinerary(@PathVariable Long id, @RequestBody Itinerary itinerary) {
-        return ResponseEntity.ok(itineraryService.updateItinerary(id, itinerary));
+    public ResponseEntity<ItineraryResponseDto> updateItinerary(@PathVariable Long id, @RequestBody ItineraryRequestDto itineraryRequestDto) {
+        ItineraryResponseDto updatedItinerary = itineraryService.updateItinerary(id, itineraryRequestDto);
+        return ResponseEntity.ok(updatedItinerary);
     }
 
     @DeleteMapping("/{id}")
@@ -41,7 +39,8 @@ public class ItineraryController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Itinerary>> getAllItineraries() {
-        return ResponseEntity.ok(itineraryService.getAllItineraries());
+    public ResponseEntity<List<ItineraryResponseDto>> getAllItineraries() {
+        List<ItineraryResponseDto> itineraries = itineraryService.getAllItineraries();
+        return ResponseEntity.ok(itineraries);
     }
 }
