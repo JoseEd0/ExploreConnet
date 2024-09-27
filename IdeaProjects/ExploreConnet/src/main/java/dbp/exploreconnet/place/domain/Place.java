@@ -1,5 +1,7 @@
 package dbp.exploreconnet.place.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import dbp.exploreconnet.promotion.domain.Promotion;
 import dbp.exploreconnet.reservation.domain.Reservation;
 import dbp.exploreconnet.review.domain.Review;
@@ -48,11 +50,13 @@ public class Place {
     @OneToMany(mappedBy = "place", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Review> reviews;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "place", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Reservation> reservations;
 
     @OneToMany(mappedBy = "place", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Promotion> promotions;
+
 
     @OneToOne
     @JoinColumn(name = "owner_id")

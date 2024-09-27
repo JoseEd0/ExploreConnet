@@ -1,6 +1,7 @@
 package dbp.exploreconnet.reservation.domain;
 
 import dbp.exploreconnet.reservation.infrastructure.ReservationRepository;
+import dbp.exploreconnet.user.domain.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,6 +30,10 @@ public class ReservationService {
 
     public void deleteReservation(Long id) {
         reservationRepository.deleteById(id);
+    }
+
+    public List<Reservation> getReservationsForUser(User user) {
+        return reservationRepository.findByUser(user);
     }
 
     public List<Reservation> getAllReservations() {

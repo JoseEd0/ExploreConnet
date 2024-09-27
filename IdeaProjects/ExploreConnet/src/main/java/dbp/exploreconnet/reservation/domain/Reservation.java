@@ -1,5 +1,7 @@
 package dbp.exploreconnet.reservation.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import dbp.exploreconnet.itinerary.domain.Itinerary;
 import dbp.exploreconnet.place.domain.Place;
 import dbp.exploreconnet.user.domain.User;
@@ -29,9 +31,11 @@ public class Reservation {
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonBackReference
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "itinerary_id", nullable = false)
+    @JoinColumn(name = "itinerary_id", nullable = true)
+    @JsonBackReference
     private Itinerary itinerary;
 }

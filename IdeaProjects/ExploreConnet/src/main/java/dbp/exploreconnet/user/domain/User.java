@@ -1,5 +1,6 @@
 package dbp.exploreconnet.user.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import dbp.exploreconnet.itinerary.domain.Itinerary;
 import dbp.exploreconnet.notification.domain.Notification;
 import dbp.exploreconnet.place.domain.Place;
@@ -39,6 +40,7 @@ public class User {
     private Place place; // Owner's local (if applicable)
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private List<Reservation> reservations;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)

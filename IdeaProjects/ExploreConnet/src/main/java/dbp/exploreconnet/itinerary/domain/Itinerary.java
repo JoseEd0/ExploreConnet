@@ -2,6 +2,7 @@ package dbp.exploreconnet.itinerary.domain;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import dbp.exploreconnet.reservation.domain.Reservation;
 import dbp.exploreconnet.user.domain.User;
 import jakarta.persistence.*;
@@ -26,6 +27,7 @@ public class Itinerary {
     @JsonIgnore
     private User user;
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "itinerary", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Reservation> reservations;
 }
