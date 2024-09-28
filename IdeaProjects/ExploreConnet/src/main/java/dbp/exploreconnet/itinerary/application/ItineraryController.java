@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 package dbp.exploreconnet.itinerary.application;
 
 import dbp.exploreconnet.itinerary.domain.Itinerary;
@@ -70,5 +69,3 @@ public class ItineraryController {
         return responseDto;
     }
 }
-=======
->>>>>>> 47e1e9d299e0cec2c8bf5520b1fcc8af77d74a45
