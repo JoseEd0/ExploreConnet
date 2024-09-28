@@ -2,7 +2,7 @@ package dbp.exploreconnet.place.application;
 
 import dbp.exploreconnet.place.domain.Place;
 import dbp.exploreconnet.place.domain.PlaceService;
-import dbp.exploreconnet.place.dto.PlaceDTO;
+import dbp.exploreconnet.place.dto.PlaceDto;
 import dbp.exploreconnet.user.domain.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +23,7 @@ public class PlaceController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<PlaceDTO> getPlaceDetails(@PathVariable Long id, User user) {
+    public ResponseEntity<PlaceDto> getPlaceDetails(@PathVariable Long id, User user) {
         Place place = placeService.getPlaceById(id);
         if (place.getOwner().equals(user)) {
             return ResponseEntity.ok(placeService.getPlaceWithReservations(place));

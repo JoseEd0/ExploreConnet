@@ -9,11 +9,4 @@ public class UserResponseDto {
     private String fullName;
     private String email;
     private String role;
-
-    public UserResponseDto(User user) {
-        this.id = user.getId();
-        this.fullName = user.getFullName();
-        this.email = user.getEmail();
-        this.role = user.getRole().name();
-    }
 }

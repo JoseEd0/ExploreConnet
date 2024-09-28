@@ -4,10 +4,10 @@ import dbp.exploreconnet.reservation.domain.Reservation;
 
 import java.util.List;
 
-public class PlaceWithReservationsDTO extends PlaceDTO{
+public class PlaceWithReservationsDto extends PlaceDto {
     private List<Reservation> reservations;
 
-    public PlaceWithReservationsDTO(Long id, String name, String address, List<Reservation> reservations) {
+    public PlaceWithReservationsDto(Long id, String name, String address, List<Reservation> reservations) {
         super(id, name, address);
         this.reservations = reservations;
     }

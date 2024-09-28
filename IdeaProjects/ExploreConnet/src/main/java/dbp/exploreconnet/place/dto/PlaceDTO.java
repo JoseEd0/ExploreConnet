@@ -5,12 +5,12 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class PlaceDTO {
+public class PlaceDto {
     private Long id;
     private String name;
     private String address;
 
-    public PlaceDTO(Long id, String name, String address) {
+    public PlaceDto(Long id, String name, String address) {
         this.id = id;
         this.name = name;
         this.address = address;

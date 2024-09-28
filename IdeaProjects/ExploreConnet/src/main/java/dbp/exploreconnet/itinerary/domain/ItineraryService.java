@@ -37,6 +37,7 @@ public class ItineraryService {
     public Itinerary updateItinerary(Long id, Itinerary itinerary) {
         Itinerary existingItinerary = getItineraryById(id);
         existingItinerary.setName(itinerary.getName());
+        existingItinerary.setReservations(itinerary.getReservations());
         return itineraryRepository.save(existingItinerary);
     }
 

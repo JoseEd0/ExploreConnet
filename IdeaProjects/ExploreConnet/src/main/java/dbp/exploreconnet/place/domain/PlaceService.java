@@ -1,10 +1,9 @@
 package dbp.exploreconnet.place.domain;
 
 
-import dbp.exploreconnet.place.dto.PlaceDTO;
-import dbp.exploreconnet.place.dto.PlaceWithReservationsDTO;
+import dbp.exploreconnet.place.dto.PlaceDto;
+import dbp.exploreconnet.place.dto.PlaceWithReservationsDto;
 import dbp.exploreconnet.place.infrastructure.PlaceRepository;
-import org.aspectj.lang.annotation.Around;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -39,8 +38,8 @@ public class PlaceService {
     public List<Place> getAllPlaces() {
         return placeRepository.findAll();
     }
-    public PlaceWithReservationsDTO getPlaceWithReservations(Place place) {
-        return new PlaceWithReservationsDTO(
+    public PlaceWithReservationsDto getPlaceWithReservations(Place place) {
+        return new PlaceWithReservationsDto(
                 place.getId(),
                 place.getName(),
                 place.getAddress(),
@@ -49,8 +48,8 @@ public class PlaceService {
     }
 
     // Método que devuelve el Place sin las reservas
-    public PlaceDTO getPlaceWithoutReservations(Place place) {
-        return new PlaceDTO(
+    public PlaceDto getPlaceWithoutReservations(Place place) {
+        return new PlaceDto(
                 place.getId(),
                 place.getName(),
                 place.getAddress()
