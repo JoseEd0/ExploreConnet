@@ -12,6 +12,7 @@ import org.aspectj.lang.annotation.Around;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -78,15 +79,25 @@ public class PlaceService {
         responseDto.setDescription(place.getDescription());
         responseDto.setCategory(place.getCategory());
         responseDto.setOpeningHours(place.getOpeningHours());
-        responseDto.setReviews(place.getReviews().stream()
+
+        // Asignar una lista vacía si las reviews son null
+        List<ReviewResponseDto> reviews = place.getReviews() != null
+                ? place.getReviews().stream()
                 .map(review -> {
                     ReviewResponseDto reviewDto = new ReviewResponseDto();
                     reviewDto.setId(review.getId());
                     reviewDto.setComment(review.getComment());
                     reviewDto.setRating(review.getRating());
                     return reviewDto;
-                }).collect(Collectors.toList()).reversed());
-        responseDto.setPromotions(place.getPromotions().stream()
+                })
+                .collect(Collectors.toList())
+                : Collections.emptyList();
+
+        responseDto.setReviews(reviews);
+
+        // Asignar una lista vacía si las promotions son null
+        List<PromotionResponseDto> promotions = place.getPromotions() != null
+                ? place.getPromotions().stream()
                 .map(promotion -> {
                     PromotionResponseDto promotionDto = new PromotionResponseDto();
                     promotionDto.setId(promotion.getId());
@@ -94,9 +105,13 @@ public class PlaceService {
                     promotionDto.setDiscount(promotion.getDiscount());
                     promotionDto.setStartDate(promotion.getStartDate());
                     promotionDto.setEndDate(promotion.getEndDate());
-                    promotionDto.setPlaceName(promotion.getPlace().getName());
                     return promotionDto;
-                }).collect(Collectors.toList()));
+                })
+                .collect(Collectors.toList())
+                : Collections.emptyList();
+
+        responseDto.setPromotions(promotions);
+
         return responseDto;
     }
 }

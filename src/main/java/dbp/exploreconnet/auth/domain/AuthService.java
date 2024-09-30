@@ -60,9 +60,9 @@ public class AuthService {
 
         userRepository.save(user);
 
+        userRepository.save(user);
         JwtAuthResponseDto response = new JwtAuthResponseDto();
-        jwtService.generateToken(user);
-        response.setMessage("Registro Exitoso");
+        response.setToken(jwtService.generateToken(user));
         return response;
     }
 

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Tu Reserva en Explore Connect</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        .email-container {
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            background-color: #4CAF50;
+            padding: 20px;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+            text-align: center;
+            color: #fff;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        .content {
+            padding: 20px;
+            text-align: left;
+        }
+
+        .content h2 {
+            font-size: 20px;
+            color: #4CAF50;
+        }
+
+        .reservation-details {
+            margin: 20px 0;
+            font-size: 16px;
+        }
+
+        .reservation-details p {
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+
+        .qr-code {
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .qr-code img {
+            border: 2px solid #4CAF50;
+            padding: 10px;
+            background-color: #fff;
+            border-radius: 10px;
+        }
+
+        .footer {
+            text-align: center;
+            font-size: 14px;
+            color: #666;
+            margin-top: 20px;
+        }
+
+        .footer p {
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+<div class="email-container">
+    <!-- Header -->
+    <div class="header">
+        <h1>¡Reserva Confirmada!</h1>
+    </div>
+
+    <!-- Content -->
+    <div class="content">
+        <h2>Hola, [[${name}]]</h2>
+        <p>Te informamos que tu reserva ha sido exitosa. A continuación te presentamos los detalles:</p>
+
+        <div class="reservation-details">
+            <p><strong>Reserva ID:</strong> [[${reservationId}]]</p>
+            <p><strong>Lugar:</strong> [[${placeName}]]</p>
+            <p><strong>Fecha y Hora:</strong> [[${reservationDate}]]</p>
+            <p><strong>Número de Personas:</strong> [[${numberOfPeople}]]</p>
+        </div>
+
+        <!-- QR Code -->
+        <div class="qr-code">
+            <p><strong>Escanea el código QR para validar tu reserva:</strong></p>
+            <img th:src="${qrCodeUrl}" alt="QR Code" />
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>El código QR sirve para validar la autenticidad de tu reserva. Puedes mostrar este código al llegar al lugar de tu reserva para confirmar tu asistencia.</p>
+        </div>
+    </div>
+</div>
+</body>
+</html>

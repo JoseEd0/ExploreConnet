@@ -1,6 +1,8 @@
 package dbp.exploreconnet.reservation.domain;
 
 import dbp.exploreconnet.auth.utils.AuthorizationUtils;
+import dbp.exploreconnet.email.domain.EmailService;
+import dbp.exploreconnet.events.SignIn.QRCodeService;
 import dbp.exploreconnet.exceptions.ResourceNotFoundException;
 import dbp.exploreconnet.place.domain.Place;
 import dbp.exploreconnet.place.infrastructure.PlaceRepository;
@@ -10,6 +12,7 @@ import dbp.exploreconnet.reservation.dto.UserReservationResponseDto;
 import dbp.exploreconnet.reservation.infrastructure.ReservationRepository;
 import dbp.exploreconnet.user.domain.User;
 import dbp.exploreconnet.user.infrastructure.UserRepository;
+import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,6 +33,12 @@ public class ReservationService {
     @Autowired
     private AuthorizationUtils authorizationUtils;
 
+    @Autowired
+    private QRCodeService qrCodeService;
+
+    @Autowired
+    private EmailService emailService;
+
     public ReservationResponseDto createReservation(ReservationRequestDto reservationRequest) {
         String currentUserEmail = authorizationUtils.getCurrentUserEmail();
         User user = userRepository.findByEmail(currentUserEmail)
@@ -46,6 +55,21 @@ public class ReservationService {
 
         Reservation savedReservation = reservationRepository.save(reservation);
 
+        String qrCodeUrl = qrCodeService.generateQRCodeUrl(
+                savedReservation.getId(),
+                savedReservation.getDate().toString(),
+                savedReservation.getNumberOfPeople(),
+                savedReservation.getPlace().getName(),  // Acceder al nombre del lugar
+                savedReservation.getUser().getFullName()    // Acceder al nombre del usuario
+        );
+
+
+        try {
+            emailService.sendReservationQRCode(user.getEmail(), user.getFullName(), savedReservation, qrCodeUrl);
+        } catch (MessagingException e) {
+            throw new RuntimeException("Error sending email with QR code", e);
+        }
+
         ReservationResponseDto responseDto = new ReservationResponseDto();
         responseDto.setId(savedReservation.getId());
         responseDto.setUserName(user.getFullName());
@@ -56,6 +80,8 @@ public class ReservationService {
 
         return responseDto;
     }
+
+
 
     public List<UserReservationResponseDto> getReservationsByUser() {
         String currentUserEmail = authorizationUtils.getCurrentUserEmail();
