@@ -43,6 +43,8 @@ public class QRCodeService {
             this.numberOfPeople = numberOfPeople;
             this.placeName = placeName;
             this.userName = userName;
+
+
         }
     }
 }
