@@ -10,6 +10,7 @@ import dbp.exploreconnet.user.domain.Role;
 import dbp.exploreconnet.user.domain.User;
 import dbp.exploreconnet.user.infrastructure.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,10 +22,14 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class AuthService {
 
-    private final UserRepository userRepository;
-    private final JwtService jwtService;
-    private final PasswordEncoder passwordEncoder;
-    private final ApplicationEventPublisher applicationEventPublisher;
+    @Autowired
+    private UserRepository<User> userRepository;
+    @Autowired
+    private JwtService jwtService;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+    @Autowired
+    private ApplicationEventPublisher applicationEventPublisher;
 
     public JwtAuthResponseDto login(LoginDto logInDto) {
         User user = userRepository.findByEmail(logInDto.getEmail())
@@ -38,7 +43,6 @@ public class AuthService {
         response.setToken(jwtService.generateToken(user));
         return response;
     }
-
 
     public JwtAuthResponseDto signIn(SigninDto signinDto) {
         if (userRepository.findByEmail(signinDto.getEmail()).isPresent()) {
