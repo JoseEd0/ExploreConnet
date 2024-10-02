@@ -1,26 +1,37 @@
 package dbp.exploreconnet.config;
 
+import dbp.exploreconnet.user.domain.Role;
+import dbp.exploreconnet.user.domain.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
+    private final UserService userService;
 
     @Autowired
-    public JwtAuthenticationFilter(JwtService jwtService) {
+    public JwtAuthenticationFilter(JwtService jwtService, UserService userService) {
         this.jwtService = jwtService;
+        this.userService = userService;
     }
 
     @Override
@@ -29,32 +40,43 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String jwt;
         String userEmail;
 
-        // Verificar si la cabecera tiene el token JWT en formato Bearer
         if (!StringUtils.hasText(authHeader) || !StringUtils.startsWithIgnoreCase(authHeader, "Bearer ")) {
             filterChain.doFilter(servletRequest, servletResponse);
             return;
         }
 
-        // Extraer el token JWT de la cabecera
         jwt = authHeader.substring(7);
 
         try {
-            // Extraer el correo electrónico (nombre de usuario) del token
+            // Extraer el nombre de usuario
             userEmail = jwtService.extractUsername(jwt);
 
-            // Verificar si el usuario aún no está autenticado
             if (StringUtils.hasText(userEmail) && SecurityContextHolder.getContext().getAuthentication() == null) {
-                // Validar el token
-                jwtService.validateToken(jwt, userEmail);
+                jwtService.validateToken(jwt, userEmail);  // Método de validación
+
+                // Extraer roles del JWT (basado en el enum Role)
+                List<Role> roles = jwtService.extractRoles(jwt);  // Ahora estamos extrayendo una lista de Role (enum)
+
+                // Convertir los roles del enum Role a SimpleGrantedAuthority
+                List<SimpleGrantedAuthority> authorities = roles.stream()
+                        .map(role -> new SimpleGrantedAuthority(role.name()))  // Convertimos cada Role a String usando role.name()
+                        .collect(Collectors.toList());
+
+                UserDetails userDetails = userService.userDetailsService().loadUserByUsername(userEmail);
+
+                UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+                        userDetails, null, authorities);
+
+                authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(servletRequest));
+
+                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
             }
 
         } catch (AuthenticationException ex) {
-            // Si la validación del token falla, devolver un error 401 (No autorizado)
             servletResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token JWT no válido");
             return;
         }
 
-        // Continuar con el filtro si el token es válido
         filterChain.doFilter(servletRequest, servletResponse);
     }
 }

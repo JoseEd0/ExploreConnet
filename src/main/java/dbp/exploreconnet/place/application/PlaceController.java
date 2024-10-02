@@ -6,6 +6,7 @@ import dbp.exploreconnet.place.dto.PlaceRequestDto;
 import dbp.exploreconnet.place.dto.PlaceResponseDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,6 +18,7 @@ public class PlaceController {
     @Autowired
     private PlaceService placeService;
 
+    @PreAuthorize("hasAuthority('OWNER')")
     @PostMapping
     public ResponseEntity<PlaceResponseDto> createPlace(@RequestBody PlaceRequestDto placeRequestDto) {
         return ResponseEntity.ok(placeService.createPlace(placeRequestDto));
