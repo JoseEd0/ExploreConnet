@@ -81,6 +81,7 @@ public class JwtService {
                     userDetails,
                     token,
                     authorities
+
             );
 
             SecurityContext context = SecurityContextHolder.createEmptyContext();
