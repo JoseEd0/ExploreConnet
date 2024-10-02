@@ -66,8 +66,8 @@ public class AuthService {
         return response;
     }
 
-    public boolean verifyPassword(Long userId, String password) {
-        User user = userRepository.findById(userId)
+    public boolean verifyPasswordByEmail(String email, String password) {
+        User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
         return passwordEncoder.matches(password, user.getPassword());
     }

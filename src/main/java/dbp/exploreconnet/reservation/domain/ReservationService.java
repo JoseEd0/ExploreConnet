@@ -2,7 +2,7 @@ package dbp.exploreconnet.reservation.domain;
 
 import dbp.exploreconnet.auth.utils.AuthorizationUtils;
 import dbp.exploreconnet.email.domain.EmailService;
-import dbp.exploreconnet.events.SignIn.QRCodeService;
+import dbp.exploreconnet.events.qr.QRCodeService;
 import dbp.exploreconnet.exceptions.ResourceNotFoundException;
 import dbp.exploreconnet.place.domain.Place;
 import dbp.exploreconnet.place.infrastructure.PlaceRepository;

@@ -48,18 +48,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         jwt = authHeader.substring(7);
 
         try {
-            // Extraer el nombre de usuario
             userEmail = jwtService.extractUsername(jwt);
 
             if (StringUtils.hasText(userEmail) && SecurityContextHolder.getContext().getAuthentication() == null) {
-                jwtService.validateToken(jwt, userEmail);  // Método de validación
+                jwtService.validateToken(jwt, userEmail);
 
-                // Extraer roles del JWT (basado en el enum Role)
-                List<Role> roles = jwtService.extractRoles(jwt);  // Ahora estamos extrayendo una lista de Role (enum)
+                List<Role> roles = jwtService.extractRoles(jwt);
 
-                // Convertir los roles del enum Role a SimpleGrantedAuthority
                 List<SimpleGrantedAuthority> authorities = roles.stream()
-                        .map(role -> new SimpleGrantedAuthority(role.name()))  // Convertimos cada Role a String usando role.name()
+                        .map(role -> new SimpleGrantedAuthority(role.name()))
                         .collect(Collectors.toList());
 
                 UserDetails userDetails = userService.userDetailsService().loadUserByUsername(userEmail);

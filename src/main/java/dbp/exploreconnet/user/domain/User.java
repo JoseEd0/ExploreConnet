@@ -1,5 +1,6 @@
 package dbp.exploreconnet.user.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import dbp.exploreconnet.notification.domain.Notification;
 import dbp.exploreconnet.place.domain.Place;
 import dbp.exploreconnet.reservation.domain.Reservation;
@@ -18,7 +19,7 @@ import java.util.List;
 @Getter
 @Setter
 @Table(name = "users")
-public class User implements UserDetails {  // Implementa UserDetails
+public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,12 +36,13 @@ public class User implements UserDetails {  // Implementa UserDetails
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Role role;  // Enum for roles (GUEST, USER, OWNER)
+    private Role role;
 
     @OneToOne(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Place place;  // Owner's local (if applicable)
+    private Place place;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore  // Agregado para evitar el bucle
     private List<Reservation> reservations;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -51,11 +53,8 @@ public class User implements UserDetails {  // Implementa UserDetails
 
     private LocalDateTime createdAt;
 
-    // Métodos de UserDetails
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        // Convertimos el rol a una autoridad
         return List.of(() -> role.name());
     }
 
@@ -66,26 +65,26 @@ public class User implements UserDetails {  // Implementa UserDetails
 
     @Override
     public String getUsername() {
-        return this.email;  // getEmail() actúa como el username
+        return this.email;
     }
 
     @Override
     public boolean isAccountNonExpired() {
-        return true;  // Puedes implementar la lógica según tus reglas
+        return true;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return true;  // Puedes implementar la lógica según tus reglas
+        return true;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return true;  // Puedes implementar la lógica según tus reglas
+        return true;
     }
 
     @Override
     public boolean isEnabled() {
-        return true;  // Puedes implementar la lógica según tus reglas
+        return true;
     }
 }
