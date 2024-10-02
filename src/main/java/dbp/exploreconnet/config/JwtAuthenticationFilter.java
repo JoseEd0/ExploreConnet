@@ -34,11 +34,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         this.userService = userService;
     }
 
+
     @Override
     protected void doFilterInternal(HttpServletRequest servletRequest, HttpServletResponse servletResponse, FilterChain filterChain) throws ServletException, IOException {
         String authHeader = servletRequest.getHeader("Authorization");
         String jwt;
         String userEmail;
+
 
         if (!StringUtils.hasText(authHeader) || !StringUtils.startsWithIgnoreCase(authHeader, "Bearer ")) {
             filterChain.doFilter(servletRequest, servletResponse);
