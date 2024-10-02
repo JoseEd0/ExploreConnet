@@ -34,6 +34,7 @@ public class PlaceController {
         return ResponseEntity.ok(placeService.updatePlace(id, placeRequestDto));
     }
 
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePlace(@PathVariable Long id) {
         placeService.deletePlace(id);
