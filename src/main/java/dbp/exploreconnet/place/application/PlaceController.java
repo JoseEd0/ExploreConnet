@@ -24,22 +24,27 @@ public class PlaceController {
         return ResponseEntity.ok(placeService.createPlace(placeRequestDto));
     }
 
+    @PreAuthorize("hasAuthority('USER')")
     @GetMapping("/{id}")
     public ResponseEntity<PlaceResponseDto> getPlaceById(@PathVariable Long id) {
         return ResponseEntity.ok(placeService.getPlaceById(id));
     }
 
+    @PreAuthorize("hasAuthority('OWNER')")
     @PutMapping("/{id}")
     public ResponseEntity<PlaceResponseDto> updatePlace(@PathVariable Long id, @RequestBody PlaceRequestDto placeRequestDto) {
         return ResponseEntity.ok(placeService.updatePlace(id, placeRequestDto));
     }
 
+
+    @PreAuthorize("hasAuthority('OWNER')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePlace(@PathVariable Long id) {
         placeService.deletePlace(id);
         return ResponseEntity.noContent().build();
     }
 
+    @PreAuthorize("hasAuthority('USER')")
     @GetMapping
     public ResponseEntity<List<PlaceResponseDto>> getAllPlaces() {
         return ResponseEntity.ok(placeService.getAllPlaces());

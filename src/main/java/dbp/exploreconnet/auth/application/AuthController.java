@@ -34,7 +34,8 @@ public class AuthController {
 
     @PostMapping("/verify-password")
     public ResponseEntity<Boolean> verifyPassword(@RequestBody UserPasswordVerificationRequestDto request) {
-        boolean isValid = authenticationService.verifyPassword(request.getUserId(), request.getPassword());
+        boolean isValid = authenticationService.verifyPasswordByEmail(request.getEmail(), request.getPassword());
         return ResponseEntity.ok(isValid);
     }
+
 }

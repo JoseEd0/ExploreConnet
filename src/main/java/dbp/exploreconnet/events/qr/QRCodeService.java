@@ -1,4 +1,4 @@
-package dbp.exploreconnet.events.SignIn;
+package dbp.exploreconnet.events.qr;
 
 import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.databind.ObjectMapper;

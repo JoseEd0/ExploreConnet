@@ -5,6 +5,7 @@ import dbp.exploreconnet.review.domain.ReviewService;
 import dbp.exploreconnet.review.dto.NewReviewDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,12 +22,15 @@ public class ReviewController {
         this.reviewService = reviewService;
     }
 
+
+    @PreAuthorize("hasAuthority('USER')")
     @PostMapping("/new")
     public ResponseEntity<String> createNewReview(@RequestBody NewReviewDto newReview) {
         reviewService.createNewReview(newReview);
         return ResponseEntity.ok("Review created");
     }
 
+    @PreAuthorize("hasAuthority('USER')")
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteReview(@PathVariable Long id) {
         reviewService.deleteReview(id);

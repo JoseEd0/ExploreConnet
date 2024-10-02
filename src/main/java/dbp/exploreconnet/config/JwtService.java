@@ -31,18 +31,15 @@ public class JwtService {
 
     private final UserService userService;
 
-    // Extraer el username del token
     public String extractUsername(String token) {
         return JWT.decode(token).getSubject();
     }
 
-    // Extraer los roles desde el token (basado en el enum Role)
     public List<Role> extractRoles(String token) {
         String roleString = JWT.decode(token).getClaim("role").asString();
-        return List.of(Role.valueOf(roleString));  // Convertimos el String a un valor del enum Role
+        return List.of(Role.valueOf(roleString));
     }
 
-    // Generar el token JWT con los roles basados en el enum Role
     public String generateToken(UserDetails data) {
         Date now = new Date();
         Date expiration = new Date(now.getTime() + 1000 * 60 * 60 * 10); // 10 horas de validez
