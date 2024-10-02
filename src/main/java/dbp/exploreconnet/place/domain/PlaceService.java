@@ -95,7 +95,6 @@ public class PlaceService {
 
         responseDto.setReviews(reviews);
 
-        // Asignar una lista vacía si las promotions son null
         List<PromotionResponseDto> promotions = place.getPromotions() != null
                 ? place.getPromotions().stream()
                 .map(promotion -> {

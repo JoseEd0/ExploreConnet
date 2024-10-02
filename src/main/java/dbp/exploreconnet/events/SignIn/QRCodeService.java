@@ -14,14 +14,11 @@ public class QRCodeService {
         ReservationData data = new ReservationData(id, date, numberOfPeople, placeName, userName);
 
         try {
-            // Convertir los datos a formato JSON
             ObjectMapper objectMapper = new ObjectMapper();
             String jsonData = objectMapper.writeValueAsString(data);
 
-            // Codificar el JSON en URL para evitar problemas con caracteres especiales
             String encodedData = URLEncoder.encode(jsonData, StandardCharsets.UTF_8.toString());
 
-            // Retornar la URL del código QR con los datos codificados
             return QR_API_URL + encodedData;
         } catch (Exception e) {
             e.printStackTrace();
@@ -29,7 +26,6 @@ public class QRCodeService {
         }
     }
 
-    // Clase interna para representar los datos de la reserva
     private static class ReservationData {
         public Long id;
         public String date;
