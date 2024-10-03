@@ -2,6 +2,8 @@ name: Autograding Tests
 
 on:
   push:
+    branches:
+      - main
   workflow_dispatch:
   repository_dispatch:
 
@@ -14,7 +16,7 @@ jobs:
   run-autograding-tests:
     runs-on: ubuntu-latest
     if: github.actor != 'explore-connect[bot]'
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -27,14 +29,19 @@ jobs:
 
       - name: Build with Maven
         run: mvn -B package --file pom.xml
-      
-      - name: Run UserRepositoryTest
+
+      - name: Run all Repository Tests
         id: run_tests
-        run: mvn test -Dtest=dbp.exploreconnet.user.infrastructure.UserRepositoryTest
-        
+        run: |
+          mvn test -Dtest=dbp.exploreconnet.user.infrastructure.UserRepositoryTest
+          mvn test -Dtest=dbp.exploreconnet.place.infrastructure.PlaceRepositoryTest
+          mvn test -Dtest=dbp.exploreconnet.reservation.infrastructure.ReservationRepositoryTest
+          mvn test -Dtest=dbp.exploreconnet.review.infrastructure.ReviewRepositoryTest
+          mvn test -Dtest=dbp.exploreconnet.promotion.infrastructure.PromotionRepositoryTest
+
       - name: Display Test Results
-        run: mvn test -Dtest=dbp.exploreconnet.user.infrastructure.UserRepositoryTest
-      
+        run: mvn surefire-report:report
+
   build:
     name: Build and analyze
     runs-on: ubuntu-latest
