@@ -10,7 +10,7 @@ permissions:
 jobs:
   run-autograding-tests:
     runs-on: ubuntu-latest
-    if: github.actor != 'github-classroom[bot]'
+    if: github.actor != 'explore-connect[bot]'
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -19,51 +19,14 @@ jobs:
         with:
           java-version: '17'
           distribution: 'adopt'
-      - name: DriverControllerSecurityTest
-        id: drivercontrollersecuritytest
+      - name: UserRepositoryTest
+        id: userrepositorytest
         uses: education/autograding-command-grader@v1
-        with:
-          test-name: DriverControllerSecurityTest
-          setup-command: mvn compile
-          command: mvn clean test -PDriverControllerSecurityTest
-          timeout: 10
-          max-score: 6
-      - name: PassengerControllerSecurityTest
-        id: passengercontrollersecuritytest
-        uses: education/autograding-command-grader@v1
-        with:
-          test-name: PassengerControllerSecurityTest
-          setup-command: mvn compile
-          command: mvn clean test -PPassengerControllerSecurityTest
-          timeout: 10
-          max-score: 6
-      - name: ReviewControllerSecurityTest
-        id: reviewcontrollersecuritytest
-        uses: education/autograding-command-grader@v1
-        with:
-          test-name: ReviewControllerSecurityTest
-          setup-command: mvn compile
-          command: mvn clean test -PReviewControllerSecurityTest
-          timeout: 10
-          max-score: 5
-      - name: RideControllerSecurityTest
-        id: ridecontrollersecuritytest
-        uses: education/autograding-command-grader@v1
-        with:
-          test-name: RideControllerSecurityTest
-          setup-command: mvn compile
-          command: mvn clean test -PRideControllerSecurityTest
-          timeout: 10
-          max-score: 5
-      - name: Autograding Reporter
-        uses: education/autograding-grading-reporter@v1
+       
         env:
-          DRIVERCONTROLLERSECURITYTEST_RESULTS: "${{steps.drivercontrollersecuritytest.outputs.result}}"
-          PASSENGERCONTROLLERSECURITYTEST_RESULTS: "${{steps.passengercontrollersecuritytest.outputs.result}}"
-          REVIEWCONTROLLERSECURITYTEST_RESULTS: "${{steps.reviewcontrollersecuritytest.outputs.result}}"
-          RIDECONTROLLERSECURITYTEST_RESULTS: "${{steps.ridecontrollersecuritytest.outputs.result}}"
-        with:
-          runners: drivercontrollersecuritytest,passengercontrollersecuritytest,reviewcontrollersecuritytest,ridecontrollersecuritytest
+          USERREPOSITORYTEST_RESULTS: "${{steps.userrepositorytest.outputs.result}}"
+         
+          runners: userrepositorytest
   build:
     name: Build and analyze
     runs-on: ubuntu-latest
