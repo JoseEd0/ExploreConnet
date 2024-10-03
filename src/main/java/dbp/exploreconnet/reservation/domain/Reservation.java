@@ -1,5 +1,7 @@
 package dbp.exploreconnet.reservation.domain;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import dbp.exploreconnet.place.domain.Place;
 import dbp.exploreconnet.user.domain.User;
 import jakarta.persistence.*;
@@ -11,6 +13,7 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Setter
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Reservation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

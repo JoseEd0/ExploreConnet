@@ -1,6 +1,7 @@
 package dbp.exploreconnet.place.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import dbp.exploreconnet.promotion.domain.Promotion;
 import dbp.exploreconnet.reservation.domain.Reservation;
 import dbp.exploreconnet.review.domain.Review;
@@ -14,6 +15,7 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Place {
 
     @Id
@@ -46,12 +48,10 @@ public class Place {
     private Double longitude;
 
     @OneToMany(mappedBy = "place", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore  // Agregado para evitar el bucle
-    private List<Review> reviews;
+    private List<Reservation> reservations;
 
     @OneToMany(mappedBy = "place", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore  // Agregado para evitar el bucle
-    private List<Reservation> reservations;
+    private List<Review> reviews;
 
     @OneToMany(mappedBy = "place", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Promotion> promotions;
