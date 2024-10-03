@@ -1,0 +1,100 @@
+name: Autograding Tests
+'on':
+  - push
+  - workflow_dispatch
+  - repository_dispatch
+permissions:
+  checks: write
+  actions: read
+  contents: read
+jobs:
+  run-autograding-tests:
+    runs-on: ubuntu-latest
+    if: github.actor != 'github-classroom[bot]'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Set up JDK 17
+        uses: actions/setup-java@v2
+        with:
+          java-version: '17'
+          distribution: 'adopt'
+      - name: DriverControllerSecurityTest
+        id: drivercontrollersecuritytest
+        uses: education/autograding-command-grader@v1
+        with:
+          test-name: DriverControllerSecurityTest
+          setup-command: mvn compile
+          command: mvn clean test -PDriverControllerSecurityTest
+          timeout: 10
+          max-score: 6
+      - name: PassengerControllerSecurityTest
+        id: passengercontrollersecuritytest
+        uses: education/autograding-command-grader@v1
+        with:
+          test-name: PassengerControllerSecurityTest
+          setup-command: mvn compile
+          command: mvn clean test -PPassengerControllerSecurityTest
+          timeout: 10
+          max-score: 6
+      - name: ReviewControllerSecurityTest
+        id: reviewcontrollersecuritytest
+        uses: education/autograding-command-grader@v1
+        with:
+          test-name: ReviewControllerSecurityTest
+          setup-command: mvn compile
+          command: mvn clean test -PReviewControllerSecurityTest
+          timeout: 10
+          max-score: 5
+      - name: RideControllerSecurityTest
+        id: ridecontrollersecuritytest
+        uses: education/autograding-command-grader@v1
+        with:
+          test-name: RideControllerSecurityTest
+          setup-command: mvn compile
+          command: mvn clean test -PRideControllerSecurityTest
+          timeout: 10
+          max-score: 5
+      - name: Autograding Reporter
+        uses: education/autograding-grading-reporter@v1
+        env:
+          DRIVERCONTROLLERSECURITYTEST_RESULTS: "${{steps.drivercontrollersecuritytest.outputs.result}}"
+          PASSENGERCONTROLLERSECURITYTEST_RESULTS: "${{steps.passengercontrollersecuritytest.outputs.result}}"
+          REVIEWCONTROLLERSECURITYTEST_RESULTS: "${{steps.reviewcontrollersecuritytest.outputs.result}}"
+          RIDECONTROLLERSECURITYTEST_RESULTS: "${{steps.ridecontrollersecuritytest.outputs.result}}"
+        with:
+          runners: drivercontrollersecuritytest,passengercontrollersecuritytest,reviewcontrollersecuritytest,ridecontrollersecuritytest
+  build:
+    name: Build and analyze
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+      - name: Set up JDK 17
+        uses: actions/setup-java@v1
+        with:
+          java-version: 17
+      - name: Cache SonarQube packages
+        uses: actions/cache@v1
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
+      - name: Cache Maven packages
+        uses: actions/cache@v1
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+      - name: Create PROJECT_KEY
+        env:
+          REPO_NAME: ${{github.repositoryUrl}}
+        run: echo "PROJECT_KEY=$(echo '${{env.REPO_NAME}}'| sed -n 's/.*\/lab-e2e-20241-04-\(.*\)\.git/\1/p')" >> $GITHUB_ENV
+      - name: Build and analyze
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+          PROJECT_KEY: ${{ env.PROJECT_KEY }}
+        run: mvn -B verify -DskipTests=true org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=${{env.PROJECT_KEY}} -Dsonar.projectName=${{env.PROJECT_KEY}}
