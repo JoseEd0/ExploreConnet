@@ -1,6 +1,7 @@
 package dbp.exploreconnet.user.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import dbp.exploreconnet.notification.domain.Notification;
 import dbp.exploreconnet.place.domain.Place;
 import dbp.exploreconnet.reservation.domain.Reservation;
@@ -19,6 +20,7 @@ import java.util.List;
 @Getter
 @Setter
 @Table(name = "users")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class User implements UserDetails {
 
     @Id
@@ -42,7 +44,6 @@ public class User implements UserDetails {
     private Place place;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore  // Agregado para evitar el bucle
     private List<Reservation> reservations;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
