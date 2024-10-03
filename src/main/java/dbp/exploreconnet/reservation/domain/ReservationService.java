@@ -8,6 +8,7 @@ import dbp.exploreconnet.place.domain.Place;
 import dbp.exploreconnet.place.infrastructure.PlaceRepository;
 import dbp.exploreconnet.reservation.dto.ReservationRequestDto;
 import dbp.exploreconnet.reservation.dto.ReservationResponseDto;
+import dbp.exploreconnet.reservation.dto.ReservationSummaryDto;
 import dbp.exploreconnet.reservation.dto.UserReservationResponseDto;
 import dbp.exploreconnet.reservation.infrastructure.ReservationRepository;
 import dbp.exploreconnet.user.domain.User;
@@ -81,8 +82,6 @@ public class ReservationService {
         return responseDto;
     }
 
-
-
     public List<UserReservationResponseDto> getReservationsByUser() {
         String currentUserEmail = authorizationUtils.getCurrentUserEmail();
         User user = userRepository.findByEmail(currentUserEmail)
@@ -97,12 +96,28 @@ public class ReservationService {
         }).collect(Collectors.toList());
     }
 
-    public Reservation getReservationById(Long id) {
-        return reservationRepository.findById(id).orElseThrow(() -> new RuntimeException("Reservation not found"));
+
+    public ReservationSummaryDto getReservationById(Long id) {
+        Reservation reservation = reservationRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Reservation not found"));
+        ReservationSummaryDto summaryDto = new ReservationSummaryDto();
+        summaryDto.setReservationId(reservation.getId());
+        summaryDto.setDate(reservation.getDate());
+        summaryDto.setNumberOfPeople(reservation.getNumberOfPeople());
+        summaryDto.setPlaceId(reservation.getPlace().getId());
+        summaryDto.setPlaceName(reservation.getPlace().getName());
+        summaryDto.setUserName(reservation.getUser().getFullName());
+        summaryDto.setUserEmail(reservation.getUser().getEmail());
+        return summaryDto;
+    }
+
+    public Reservation findReservationById(Long id) {
+        return reservationRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Reservation not found"));
     }
 
     public Reservation updateReservation(Long id, Reservation reservation) {
-        Reservation existingReservation = getReservationById(id);
+        Reservation existingReservation = findReservationById(id);
         existingReservation.setDate(reservation.getDate());
         existingReservation.setNumberOfPeople(reservation.getNumberOfPeople());
         return reservationRepository.save(existingReservation);
@@ -112,8 +127,18 @@ public class ReservationService {
         reservationRepository.deleteById(id);
     }
 
-    public List<Reservation> getAllReservations() {
-        return reservationRepository.findAll();
+    public List<ReservationSummaryDto> getAllReservations() {
+        return reservationRepository.findAll().stream().map(reservation -> {
+            ReservationSummaryDto summaryDto = new ReservationSummaryDto();
+            summaryDto.setReservationId(reservation.getId());
+            summaryDto.setDate(reservation.getDate());
+            summaryDto.setNumberOfPeople(reservation.getNumberOfPeople());
+            summaryDto.setPlaceId(reservation.getPlace().getId());
+            summaryDto.setPlaceName(reservation.getPlace().getName());
+            summaryDto.setUserName(reservation.getUser().getFullName());
+            summaryDto.setUserEmail(reservation.getUser().getEmail());
+            return summaryDto;
+        }).collect(Collectors.toList());
     }
 
 }

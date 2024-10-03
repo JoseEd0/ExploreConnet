@@ -5,6 +5,7 @@ import dbp.exploreconnet.reservation.domain.Reservation;
 import dbp.exploreconnet.reservation.domain.ReservationService;
 import dbp.exploreconnet.reservation.dto.ReservationRequestDto;
 import dbp.exploreconnet.reservation.dto.ReservationResponseDto;
+import dbp.exploreconnet.reservation.dto.ReservationSummaryDto;
 import dbp.exploreconnet.reservation.dto.UserReservationResponseDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -36,7 +37,7 @@ public class ReservationController {
 
     @PreAuthorize("hasAuthority('OWNER')")
     @GetMapping("/{id}")
-    public ResponseEntity<Reservation> getReservationById(@PathVariable Long id) {
+    public ResponseEntity<ReservationSummaryDto> getReservationById(@PathVariable Long id) {
         return ResponseEntity.ok(reservationService.getReservationById(id));
     }
 
@@ -55,7 +56,7 @@ public class ReservationController {
 
     @PreAuthorize("hasAuthority('OWNER')")
     @GetMapping
-    public ResponseEntity<List<Reservation>> getAllReservations() {
+    public ResponseEntity<List<ReservationSummaryDto>> getAllReservations() {
         return ResponseEntity.ok(reservationService.getAllReservations());
     }
 
