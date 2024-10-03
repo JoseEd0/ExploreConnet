@@ -180,11 +180,10 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
+                <version>3.10.1</version> <!-- Actualiza la versión aquí -->
                 <configuration>
-                    <compilerArgs>
-                        <arg>-parameters</arg>
-                    </compilerArgs>
+                    <source>21</source> <!-- Especifica la versión de Java aquí -->
+                    <target>21</target> <!-- Especifica la versión de Java aquí -->
                 </configuration>
             </plugin>
         </plugins>
