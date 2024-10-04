@@ -147,6 +147,7 @@
             <scope>test</scope>
         </dependency>
 
+
         <!-- Testcontainers -->
         <dependency>
             <groupId>org.testcontainers</groupId>
@@ -184,14 +185,16 @@
                 </configuration>
             </plugin>
 
+
+
             <!-- Maven Compiler Plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>
                 <configuration>
-                    <source>17</source> <!-- Java 17 como fuente -->
-                    <target>17</target> <!-- Java 17 como objetivo -->
+                    <source>23</source> <!-- Java 17 como fuente -->
+                    <target>23</target> <!-- Java 17 como objetivo -->
                 </configuration>
             </plugin>
         </plugins>
