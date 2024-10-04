@@ -17,7 +17,7 @@
     <description>ExploreConnet</description>
 
     <properties>
-        <java.version>17</java.version> <!-- Usando Java 17 -->
+        <java.version>21</java.version> <!-- Cambiado a Java 17 -->
     </properties>
 
     <dependencies>
@@ -115,11 +115,16 @@
             <version>3.0.2</version>
         </dependency>
 
-        <!-- Thymeleaf for Spring 6 (compatible con Spring Boot 3.x) -->
+        <!-- Thymeleaf for Spring -->
         <dependency>
             <groupId>org.thymeleaf</groupId>
             <artifactId>thymeleaf-spring6</artifactId>
             <version>3.1.1.RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>org.thymeleaf</groupId>
+            <artifactId>thymeleaf-spring5</artifactId>
+            <version>3.0.15.RELEASE</version>
         </dependency>
 
         <!-- Jakarta Mail -->
@@ -159,6 +164,9 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
+
+
+        <!-- Testcontainers -->
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>testcontainers</artifactId>
@@ -187,14 +195,16 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
 
+
+
             <!-- Maven Compiler Plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>
                 <configuration>
-                    <source>17</source> <!-- Usar Java 17 -->
-                    <target>17</target>
+                    <source>21</source> <!-- Java 17 como fuente -->
+                    <target>21</target> <!-- Java 17 como objetivo -->
                 </configuration>
             </plugin>
         </plugins>
