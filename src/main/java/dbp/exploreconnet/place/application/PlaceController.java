@@ -49,4 +49,5 @@ public class PlaceController {
     public ResponseEntity<List<PlaceResponseDto>> getAllPlaces() {
         return ResponseEntity.ok(placeService.getAllPlaces());
     }
+
 }
