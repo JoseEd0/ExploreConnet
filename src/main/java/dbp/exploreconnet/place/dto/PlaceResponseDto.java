@@ -1,5 +1,6 @@
 package dbp.exploreconnet.place.dto;
 
+import dbp.exploreconnet.coordinate.dto.CoordinateDto;
 import dbp.exploreconnet.place.domain.PlaceCategory;
 import dbp.exploreconnet.promotion.dto.PromotionResponseDto;
 import dbp.exploreconnet.review.dto.NewReviewDto;
@@ -17,6 +18,7 @@ public class PlaceResponseDto {
     private String description;
     private PlaceCategory category;
     private String openingHours;
+    private CoordinateDto coordinate;
     private List<ReviewResponseDto> reviews;
     private List<PromotionResponseDto> promotions;
 }

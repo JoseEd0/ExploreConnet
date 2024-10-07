@@ -1,6 +1,9 @@
 package dbp.exploreconnet.place.domain;
 
 
+import dbp.exploreconnet.coordinate.domain.Coordinate;
+import dbp.exploreconnet.coordinate.dto.CoordinateDto;
+import dbp.exploreconnet.coordinate.infrastructure.CoordinateRepository;
 import dbp.exploreconnet.exceptions.ResourceNotFoundException;
 import dbp.exploreconnet.place.dto.PlaceRequestDto;
 import dbp.exploreconnet.place.dto.PlaceResponseDto;
@@ -22,6 +25,10 @@ public class PlaceService {
     @Autowired
     private PlaceRepository placeRepository;
 
+    @Autowired
+    private CoordinateRepository coordinateRepository;
+
+
     public PlaceResponseDto createPlace(PlaceRequestDto placeRequestDto) {
         Place place = new Place();
         place.setName(placeRequestDto.getName());
@@ -30,8 +37,12 @@ public class PlaceService {
         place.setDescription(placeRequestDto.getDescription());
         place.setCategory(placeRequestDto.getCategory());
         place.setOpeningHours(placeRequestDto.getOpeningHours());
-        place.setLatitude(placeRequestDto.getLatitude());
-        place.setLongitude(placeRequestDto.getLongitude());
+
+        Coordinate coordinate = new Coordinate();
+        coordinate.setLatitude(placeRequestDto.getCoordinate().getLatitude());
+        coordinate.setLongitude(placeRequestDto.getCoordinate().getLongitude());
+        coordinate = coordinateRepository.save(coordinate); // Guardar el Coordinate primero
+        place.setCoordinate(coordinate);
 
         Place savedPlace = placeRepository.save(place);
         return mapToResponseDto(savedPlace);
@@ -53,8 +64,11 @@ public class PlaceService {
         existingPlace.setDescription(placeRequestDto.getDescription());
         existingPlace.setCategory(placeRequestDto.getCategory());
         existingPlace.setOpeningHours(placeRequestDto.getOpeningHours());
-        existingPlace.setLatitude(placeRequestDto.getLatitude());
-        existingPlace.setLongitude(placeRequestDto.getLongitude());
+
+        Coordinate coordinate = existingPlace.getCoordinate();
+        coordinate.setLatitude(placeRequestDto.getCoordinate().getLatitude());
+        coordinate.setLongitude(placeRequestDto.getCoordinate().getLongitude());
+        existingPlace.setCoordinate(coordinate);
 
         Place updatedPlace = placeRepository.save(existingPlace);
         return mapToResponseDto(updatedPlace);
@@ -80,7 +94,6 @@ public class PlaceService {
         responseDto.setCategory(place.getCategory());
         responseDto.setOpeningHours(place.getOpeningHours());
 
-        // Asignar una lista vacía si las reviews son null
         List<ReviewResponseDto> reviews = place.getReviews() != null
                 ? place.getReviews().stream()
                 .map(review -> {
@@ -110,6 +123,11 @@ public class PlaceService {
                 : Collections.emptyList();
 
         responseDto.setPromotions(promotions);
+
+        CoordinateDto coordinateDto = new CoordinateDto();
+        coordinateDto.setLatitude(place.getCoordinate().getLatitude());
+        coordinateDto.setLongitude(place.getCoordinate().getLongitude());
+        responseDto.setCoordinate(coordinateDto);
 
         return responseDto;
     }

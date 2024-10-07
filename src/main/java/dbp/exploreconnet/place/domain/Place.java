@@ -2,6 +2,7 @@ package dbp.exploreconnet.place.domain;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import dbp.exploreconnet.coordinate.domain.Coordinate;
 import dbp.exploreconnet.promotion.domain.Promotion;
 import dbp.exploreconnet.reservation.domain.Reservation;
 import dbp.exploreconnet.review.domain.Review;
@@ -41,11 +42,9 @@ public class Place {
     @Column(nullable = false)
     private String openingHours;
 
-    @Column(nullable = false)
-    private Double latitude;
-
-    @Column(nullable = false)
-    private Double longitude;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "coordinate_id", referencedColumnName = "id")
+    private Coordinate coordinate;
 
     @OneToMany(mappedBy = "place", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Reservation> reservations;
