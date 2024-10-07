@@ -165,7 +165,6 @@
             <scope>test</scope>
         </dependency>
 
-
         <!-- Testcontainers -->
         <dependency>
             <groupId>org.testcontainers</groupId>
@@ -185,6 +184,13 @@
             <version>1.18.3</version>
             <scope>test</scope>
         </dependency>
+
+        <!-- AWS SDK for Java -->
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-s3</artifactId>
+            <version>1.12.100</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -194,8 +200,6 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
-
-
 
             <!-- Maven Compiler Plugin -->
             <plugin>

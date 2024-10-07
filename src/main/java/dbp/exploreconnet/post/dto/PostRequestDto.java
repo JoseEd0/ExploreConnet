@@ -1,2 +1,4 @@
-package dbp.exploreconnet.post.dto;public class PostRequestDto {
+package dbp.exploreconnet.post.dto;
+
+public class PostRequestDto {
 }

@@ -1,2 +1,4 @@
-package dbp.exploreconnet.post.domain;public class PostService {
+package dbp.exploreconnet.post.domain;
+
+public class PostService {
 }

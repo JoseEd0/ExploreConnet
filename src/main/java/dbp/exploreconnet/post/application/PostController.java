@@ -1,2 +1,4 @@
-package dbp.exploreconnet.post.application;public class PostController {
+package dbp.exploreconnet.post.application;
+
+public class PostController {
 }
