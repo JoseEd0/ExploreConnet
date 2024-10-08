@@ -184,12 +184,10 @@
             <version>1.18.3</version>
             <scope>test</scope>
         </dependency>
-
-        <!-- AWS SDK for Java -->
         <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk-s3</artifactId>
-            <version>1.12.100</version>
+            <version>1.12.756</version>
         </dependency>
     </dependencies>
 
