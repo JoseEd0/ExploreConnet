@@ -1,6 +1,5 @@
 package dbp.exploreconnet.post.domain;
 
-
 import dbp.exploreconnet.comment.domain.Comment;
 import dbp.exploreconnet.user.domain.User;
 import jakarta.persistence.*;
@@ -41,10 +40,17 @@ public class Post {
     private List<Comment> comments = new ArrayList<>();
 
 
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private User user;
+
+    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @JoinTable(
+            name = "post_likes",
+            joinColumns = @JoinColumn(name = "post_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    private List<User> likedBy = new ArrayList<>();
 }
-
-
