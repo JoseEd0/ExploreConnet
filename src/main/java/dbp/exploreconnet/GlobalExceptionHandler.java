@@ -20,13 +20,11 @@ public class GlobalExceptionHandler {
         return ex.getMessage();
     }
 
-
     @ResponseStatus(HttpStatus.CONFLICT)
     @ExceptionHandler(UniqueResourceAlreadyExist.class)
     public String handleUniqueResourceAlreadyExist(UniqueResourceAlreadyExist ex) {
         return ex.getMessage();
     }
-
 
     @ResponseStatus(HttpStatus.CONFLICT)
     @ExceptionHandler(UserAlreadyExistException.class)
@@ -34,13 +32,11 @@ public class GlobalExceptionHandler {
         return ex.getMessage();
     }
 
-
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ExceptionHandler(AuthenticationException.class)
     public String handleAuthenticationException(AuthenticationException ex) {
         return ex.getMessage();
     }
-
 
     @ResponseStatus(HttpStatus.FORBIDDEN)
     @ExceptionHandler(UnauthorizedOperationException.class)
@@ -48,13 +44,16 @@ public class GlobalExceptionHandler {
         return ex.getMessage();
     }
 
-
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(IllegalArgumentException.class)
     public String handleIllegalArgumentException(IllegalArgumentException ex) {
         return ex.getMessage();
     }
 
-
+    // Manejo de ResourceNotFoundException
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public String handleResourceNotFoundException(ResourceNotFoundException ex) {
+        return ex.getMessage();
+    }
 }
-

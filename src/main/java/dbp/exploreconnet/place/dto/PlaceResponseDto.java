@@ -15,6 +15,7 @@ public class PlaceResponseDto {
     private String name;
     private String address;
     private String image;
+    private Integer likes;
     private String description;
     private PlaceCategory category;
     private String openingHours;

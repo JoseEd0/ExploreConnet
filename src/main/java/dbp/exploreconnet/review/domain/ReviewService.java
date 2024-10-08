@@ -26,12 +26,12 @@ public class ReviewService {
     @Autowired
     private PlaceRepository placeRepository;
     @Autowired
-    private UserRepository<User> userRepository;
+    private UserRepository userRepository;
     @Autowired
     private AuthorizationUtils authorizationUtils;
 
     @Autowired
-    public ReviewService(ReviewRepository reviewRepository, UserRepository<User> userRepository, PlaceRepository placeRepository, AuthorizationUtils authorizationUtils) {
+    public ReviewService(ReviewRepository reviewRepository, UserRepository userRepository, PlaceRepository placeRepository, AuthorizationUtils authorizationUtils) {
         this.reviewRepository = reviewRepository;
         this.userRepository = userRepository;
         this.placeRepository = placeRepository;

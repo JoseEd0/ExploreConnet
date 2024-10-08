@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 public class UserService {
 
     @Autowired
-    private UserRepository<User> userRepository;
+    private UserRepository userRepository;
 
     @Bean(name = "UserDetailsService")
     public UserDetailsService userDetailsService() {

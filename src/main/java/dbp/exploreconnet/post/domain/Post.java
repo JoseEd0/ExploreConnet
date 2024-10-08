@@ -1,6 +1,7 @@
 package dbp.exploreconnet.post.domain;
 
 import dbp.exploreconnet.comment.domain.Comment;
+import dbp.exploreconnet.place.domain.Place;
 import dbp.exploreconnet.user.domain.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
@@ -32,14 +33,20 @@ public class Post {
 
     private String imageUrl;
 
-    private String audioUrl;
+    private String videoUrl;
 
     private LocalDateTime createdAt;
+
+    private String shareableUrl;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> comments = new ArrayList<>();
 
 
+    @ManyToOne
+    @JoinColumn(name = "place_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private Place place;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
