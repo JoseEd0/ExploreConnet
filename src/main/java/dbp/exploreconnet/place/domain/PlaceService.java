@@ -11,6 +11,8 @@ import dbp.exploreconnet.place.infrastructure.PlaceRepository;
 import dbp.exploreconnet.promotion.dto.PromotionResponseDto;
 import dbp.exploreconnet.review.dto.NewReviewDto;
 import dbp.exploreconnet.review.dto.ReviewResponseDto;
+import dbp.exploreconnet.user.domain.User;
+import dbp.exploreconnet.user.infrastructure.UserRepository;
 import org.aspectj.lang.annotation.Around;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,8 +30,14 @@ public class PlaceService {
     @Autowired
     private CoordinateRepository coordinateRepository;
 
+    @Autowired
+    private UserRepository<User> userRepository;
 
-    public PlaceResponseDto createPlace(PlaceRequestDto placeRequestDto) {
+
+    public PlaceResponseDto createPlace(PlaceRequestDto placeRequestDto, String ownerEmail) {
+        User owner = userRepository.findByEmail(ownerEmail)
+                .orElseThrow(() -> new ResourceNotFoundException("Owner not found"));
+
         Place place = new Place();
         place.setName(placeRequestDto.getName());
         place.setAddress(placeRequestDto.getAddress());
@@ -37,11 +45,12 @@ public class PlaceService {
         place.setDescription(placeRequestDto.getDescription());
         place.setCategory(placeRequestDto.getCategory());
         place.setOpeningHours(placeRequestDto.getOpeningHours());
+        place.setOwner(owner);
 
         Coordinate coordinate = new Coordinate();
         coordinate.setLatitude(placeRequestDto.getCoordinate().getLatitude());
         coordinate.setLongitude(placeRequestDto.getCoordinate().getLongitude());
-        coordinate = coordinateRepository.save(coordinate); // Guardar el Coordinate primero
+        coordinate = coordinateRepository.save(coordinate);
         place.setCoordinate(coordinate);
 
         Place savedPlace = placeRepository.save(place);
@@ -83,6 +92,20 @@ public class PlaceService {
                 .map(this::mapToResponseDto)
                 .collect(Collectors.toList());
     }
+
+    public PlaceResponseDto getPlaceByName(String name) {
+        Place place = placeRepository.findByName(name)
+                .orElseThrow(() -> new ResourceNotFoundException("Place not found"));
+        return mapToResponseDto(place);
+    }
+
+    public List<PlaceResponseDto> getMyPlaces(String email) {
+        List<Place> places = placeRepository.findByOwnerEmail(email);
+        return places.stream()
+                .map(this::mapToResponseDto)
+                .collect(Collectors.toList());
+    }
+
 
     private PlaceResponseDto mapToResponseDto(Place place) {
         PlaceResponseDto responseDto = new PlaceResponseDto();

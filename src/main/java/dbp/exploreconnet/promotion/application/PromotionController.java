@@ -44,7 +44,7 @@ public class PromotionController {
     }
 
 
-    @PreAuthorize("hasAuthority('USER')")
+    @PreAuthorize("hasAnyAuthority('USER', 'OWNER')")
     @GetMapping
     public ResponseEntity<List<PromotionResponseDto>> getAllPromotions() {
         return ResponseEntity.ok(promotionService.getAllPromotions());
@@ -54,5 +54,11 @@ public class PromotionController {
     @GetMapping("/place/{placeId}")
     public ResponseEntity<List<PromotionResponseDto>> getPromotionsByPlace(@PathVariable Long placeId) {
         return ResponseEntity.ok(promotionService.getPromotionsByPlace(placeId));
+    }
+
+    @PreAuthorize("hasAuthority('OWNER')")
+    @GetMapping("/myplaces")
+    public ResponseEntity<List<PromotionResponseDto>> getPromotionsByMyPlaces() {
+        return ResponseEntity.ok(promotionService.getPromotionsByMyPlaces());
     }
 }

@@ -10,6 +10,8 @@ import dbp.exploreconnet.reservation.dto.UserReservationResponseDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,7 +23,6 @@ public class ReservationController {
     @Autowired
     private ReservationService reservationService;
 
-    @PreAuthorize("hasAuthority('USER')")
     @PostMapping
     public ResponseEntity<ReservationResponseDto> createReservation(@RequestBody ReservationRequestDto reservationRequest) {
         ReservationResponseDto response = reservationService.createReservation(reservationRequest);
@@ -41,13 +42,13 @@ public class ReservationController {
         return ResponseEntity.ok(reservationService.getReservationById(id));
     }
 
-    @PreAuthorize("hasAuthority('USER')")
+    @PreAuthorize("hasAuthority('OWNER')")
     @PutMapping("/{id}")
     public ResponseEntity<Reservation> updateReservation(@PathVariable Long id, @RequestBody Reservation reservation) {
         return ResponseEntity.ok(reservationService.updateReservation(id, reservation));
     }
 
-    @PreAuthorize("hasAuthority('USER')")
+    @PreAuthorize("hasAuthority('OWNER')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteReservation(@PathVariable Long id) {
         reservationService.deleteReservation(id);
@@ -60,4 +61,12 @@ public class ReservationController {
         return ResponseEntity.ok(reservationService.getAllReservations());
     }
 
+    @PreAuthorize("hasAuthority('OWNER')")
+    @GetMapping("/myplaces")
+    public ResponseEntity<List<ReservationSummaryDto>> getReservationsByOwner() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String ownerEmail = authentication.getName();
+        List<ReservationSummaryDto> reservations = reservationService.getReservationsByOwnerEmail(ownerEmail);
+        return ResponseEntity.ok(reservations);
+    }
 }

@@ -7,6 +7,8 @@ import dbp.exploreconnet.place.dto.PlaceResponseDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,10 +23,12 @@ public class PlaceController {
     @PreAuthorize("hasAuthority('OWNER')")
     @PostMapping
     public ResponseEntity<PlaceResponseDto> createPlace(@RequestBody PlaceRequestDto placeRequestDto) {
-        return ResponseEntity.ok(placeService.createPlace(placeRequestDto));
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String ownerEmail = authentication.getName();
+        return ResponseEntity.ok(placeService.createPlace(placeRequestDto, ownerEmail));
     }
 
-    @PreAuthorize("hasAuthority('USER')")
+    @PreAuthorize("hasAnyAuthority('USER', 'OWNER','GUEST')")
     @GetMapping("/{id}")
     public ResponseEntity<PlaceResponseDto> getPlaceById(@PathVariable Long id) {
         return ResponseEntity.ok(placeService.getPlaceById(id));
@@ -44,10 +48,24 @@ public class PlaceController {
         return ResponseEntity.noContent().build();
     }
 
-    @PreAuthorize("hasAuthority('USER')")
+    @PreAuthorize("hasAnyAuthority('USER', 'OWNER','GUEST')")
     @GetMapping
     public ResponseEntity<List<PlaceResponseDto>> getAllPlaces() {
         return ResponseEntity.ok(placeService.getAllPlaces());
+    }
+
+    @PreAuthorize("hasAnyAuthority('USER', 'OWNER','GUEST')")
+    @GetMapping("/name/{name}")
+    public ResponseEntity<PlaceResponseDto> getPlaceByName(@PathVariable String name) {
+        return ResponseEntity.ok(placeService.getPlaceByName(name));
+    }
+
+    @PreAuthorize("hasAuthority('OWNER')")
+    @GetMapping("/me")
+    public ResponseEntity<List<PlaceResponseDto>> getMyPlaces() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        return ResponseEntity.ok(placeService.getMyPlaces(email));
     }
 
 }

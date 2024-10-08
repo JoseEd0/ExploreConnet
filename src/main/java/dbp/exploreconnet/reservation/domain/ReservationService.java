@@ -60,10 +60,9 @@ public class ReservationService {
                 savedReservation.getId(),
                 savedReservation.getDate().toString(),
                 savedReservation.getNumberOfPeople(),
-                savedReservation.getPlace().getName(),  // Acceder al nombre del lugar
-                savedReservation.getUser().getFullName()    // Acceder al nombre del usuario
+                savedReservation.getPlace().getName(),
+                savedReservation.getUser().getFullName()
         );
-
 
         try {
             emailService.sendReservationQRCode(user.getEmail(), user.getFullName(), savedReservation, qrCodeUrl);
@@ -139,6 +138,24 @@ public class ReservationService {
             summaryDto.setUserEmail(reservation.getUser().getEmail());
             return summaryDto;
         }).collect(Collectors.toList());
+    }
+
+    public List<ReservationSummaryDto> getReservationsByOwnerEmail(String ownerEmail) {
+        List<Place> places = placeRepository.findByOwnerEmail(ownerEmail);
+        return places.stream()
+                .flatMap(place -> reservationRepository.findByPlace(place).stream())
+                .map(reservation -> {
+                    ReservationSummaryDto summaryDto = new ReservationSummaryDto();
+                    summaryDto.setReservationId(reservation.getId());
+                    summaryDto.setDate(reservation.getDate());
+                    summaryDto.setNumberOfPeople(reservation.getNumberOfPeople());
+                    summaryDto.setPlaceId(reservation.getPlace().getId());
+                    summaryDto.setPlaceName(reservation.getPlace().getName());
+                    summaryDto.setUserName(reservation.getUser().getFullName());
+                    summaryDto.setUserEmail(reservation.getUser().getEmail());
+                    return summaryDto;
+                })
+                .collect(Collectors.toList());
     }
 
 }

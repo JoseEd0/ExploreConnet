@@ -1,6 +1,7 @@
 package dbp.exploreconnet.promotion.domain;
 
 
+import dbp.exploreconnet.auth.utils.AuthorizationUtils;
 import dbp.exploreconnet.exceptions.ResourceNotFoundException;
 import dbp.exploreconnet.place.domain.Place;
 import dbp.exploreconnet.place.infrastructure.PlaceRepository;
@@ -21,6 +22,10 @@ public class PromotionService {
 
     @Autowired
     private PlaceRepository placeRepository;
+
+    @Autowired
+    private AuthorizationUtils authorizationUtils;
+
 
     public PromotionResponseDto createPromotion(NewPromotionDto newPromotionDto) {
         Place place = placeRepository.findById(newPromotionDto.getPlaceId())
@@ -76,6 +81,16 @@ public class PromotionService {
                 .map(this::mapToResponseDto)
                 .collect(Collectors.toList());
     }
+
+    public List<PromotionResponseDto> getPromotionsByMyPlaces() {
+        String currentUserEmail = authorizationUtils.getCurrentUserEmail();
+        List<Place> places = placeRepository.findByOwnerEmail(currentUserEmail);
+        return places.stream()
+                .flatMap(place -> promotionRepository.findByPlace(place).stream())
+                .map(this::mapToResponseDto)
+                .collect(Collectors.toList());
+    }
+
 
     private PromotionResponseDto mapToResponseDto(Promotion promotion) {
         PromotionResponseDto responseDto = new PromotionResponseDto();

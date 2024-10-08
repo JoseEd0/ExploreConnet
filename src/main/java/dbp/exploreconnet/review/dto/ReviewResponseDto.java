@@ -7,4 +7,6 @@ public class ReviewResponseDto {
     private Long id;
     private String comment;
     private Integer rating;
+    private Long placeId;
+    private String placeName;
 }
