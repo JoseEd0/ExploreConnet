@@ -15,4 +15,5 @@ public class PlaceRequestDto {
     private String openingHours;
     @NotNull(message = "Coordinate cannot be null")
     private CoordinateDto coordinate;
+    private String ownerEmail;
 }

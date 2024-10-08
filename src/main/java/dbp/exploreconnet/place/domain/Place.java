@@ -55,7 +55,7 @@ public class Place {
     @OneToMany(mappedBy = "place", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Promotion> promotions;
 
-    @OneToOne
-    @JoinColumn(name = "owner_id")
+    @ManyToOne
+    @JoinColumn(name = "owner_id", nullable = false)
     private User owner;
 }

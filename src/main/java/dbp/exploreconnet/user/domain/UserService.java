@@ -77,4 +77,29 @@ public class UserService {
     public User findByEmail(String email) {
         return userRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
+
+    public UserResponseDto getUserByEmail(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + email));
+        return mapToUserResponseDto(user);
+    }
+
+    public UserResponseDto updateUserByEmail(String email, UserRequestDto userRequestDto) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + email));
+        user.setFullName(userRequestDto.getFullName());
+        user.setPassword(userRequestDto.getPassword());
+        user.setRole(Role.valueOf(userRequestDto.getRole()));
+        userRepository.save(user);
+        return mapToUserResponseDto(user);
+    }
+
+    private UserResponseDto mapToUserResponseDto(User user) {
+        UserResponseDto userResponseDto = new UserResponseDto();
+        userResponseDto.setId(user.getId());
+        userResponseDto.setFullName(user.getFullName());
+        userResponseDto.setEmail(user.getEmail());
+        userResponseDto.setRole(user.getRole().name());
+        return userResponseDto;
+    }
 }
