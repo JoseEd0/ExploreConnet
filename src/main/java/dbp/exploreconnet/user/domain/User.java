@@ -4,9 +4,11 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import dbp.exploreconnet.comment.domain.Comment;
 import dbp.exploreconnet.place.domain.Place;
+import dbp.exploreconnet.post.domain.Post;
 import dbp.exploreconnet.reservation.domain.Reservation;
 import dbp.exploreconnet.review.domain.Review;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
@@ -40,6 +42,14 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private Role role;
 
+    @NotNull
+    private String profileImageUrl = "https://exploreconnect-bucket.s3.us-east-2.amazonaws.com/default-profile-image.png";
+
+    private String expoPushToken;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Post> posts;
+
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Place> places;
 
@@ -51,6 +61,12 @@ public class User implements UserDetails {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> comments;
+
+    @ManyToMany(mappedBy = "likedBy", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    private List<Post> likedPosts;
+
+    @ManyToMany(mappedBy = "likedBy", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    private List<Comment> likedComments;
 
     private LocalDateTime createdAt;
 

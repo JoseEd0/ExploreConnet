@@ -3,6 +3,7 @@ package dbp.exploreconnet.place.domain;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import dbp.exploreconnet.coordinate.domain.Coordinate;
+import dbp.exploreconnet.post.domain.Post;
 import dbp.exploreconnet.promotion.domain.Promotion;
 import dbp.exploreconnet.reservation.domain.Reservation;
 import dbp.exploreconnet.review.domain.Review;
@@ -54,6 +55,9 @@ public class Place {
 
     @OneToMany(mappedBy = "place", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Promotion> promotions;
+
+    @OneToMany(mappedBy = "place", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Post> posts;
 
     @ManyToOne
     @JoinColumn(name = "owner_id", nullable = false)

@@ -31,7 +31,7 @@ public class PlaceService {
     private CoordinateRepository coordinateRepository;
 
     @Autowired
-    private UserRepository<User> userRepository;
+    private UserRepository userRepository;
 
 
     public PlaceResponseDto createPlace(PlaceRequestDto placeRequestDto, String ownerEmail) {
