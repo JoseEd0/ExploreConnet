@@ -14,7 +14,7 @@ public class PlaceResponseDto {
     private Long id;
     private String name;
     private String address;
-    private String image;
+    private String imageUrl;
     private Integer likes;
     private String description;
     private PlaceCategory category;

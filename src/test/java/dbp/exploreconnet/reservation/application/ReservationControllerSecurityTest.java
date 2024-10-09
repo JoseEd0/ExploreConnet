@@ -1,4 +1,4 @@
-package dbp.exploreconnet.place.application;
+package dbp.exploreconnet.reservation.application;
 
-public class PlaceControllerSecurityTest {
+public class ReservationControllerSecurityTest {
 }

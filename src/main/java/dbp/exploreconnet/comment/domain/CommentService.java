@@ -3,6 +3,7 @@ package dbp.exploreconnet.comment.domain;
 import dbp.exploreconnet.auth.utils.AuthorizationUtils;
 import dbp.exploreconnet.comment.dto.CommentRequestDto;
 import dbp.exploreconnet.comment.dto.CommentResponseDto;
+import dbp.exploreconnet.comment.dto.CommentUpdateDto;
 import dbp.exploreconnet.comment.infrastructure.CommentRepository;
 import dbp.exploreconnet.exceptions.ResourceNotFoundException;
 import dbp.exploreconnet.post.domain.Post;

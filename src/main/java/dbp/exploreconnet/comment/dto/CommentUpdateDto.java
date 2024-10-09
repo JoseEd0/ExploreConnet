@@ -1,4 +1,4 @@
-package dbp.exploreconnet.comment.domain;
+package dbp.exploreconnet.comment.dto;
 
 import lombok.Data;
 

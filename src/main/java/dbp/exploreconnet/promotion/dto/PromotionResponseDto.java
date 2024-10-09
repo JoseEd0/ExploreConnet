@@ -12,4 +12,5 @@ public class PromotionResponseDto {
     private LocalDateTime startDate;
     private LocalDateTime endDate;
     private String placeName;
+    private String imageUrl;
 }

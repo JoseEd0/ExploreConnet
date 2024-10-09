@@ -7,4 +7,5 @@ import lombok.Data;
 public class PostUpdateContentDto {
     private Long placeId;
 
+
 }
