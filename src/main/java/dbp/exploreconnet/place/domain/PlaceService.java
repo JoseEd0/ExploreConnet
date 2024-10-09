@@ -5,6 +5,7 @@ import dbp.exploreconnet.coordinate.domain.Coordinate;
 import dbp.exploreconnet.coordinate.dto.CoordinateDto;
 import dbp.exploreconnet.coordinate.infrastructure.CoordinateRepository;
 import dbp.exploreconnet.exceptions.ResourceNotFoundException;
+import dbp.exploreconnet.mediaStorage.domain.MediaStorageService;
 import dbp.exploreconnet.place.dto.PlaceRequestDto;
 import dbp.exploreconnet.place.dto.PlaceResponseDto;
 import dbp.exploreconnet.place.infrastructure.PlaceRepository;
@@ -13,6 +14,7 @@ import dbp.exploreconnet.review.dto.NewReviewDto;
 import dbp.exploreconnet.review.dto.ReviewResponseDto;
 import dbp.exploreconnet.user.domain.User;
 import dbp.exploreconnet.user.infrastructure.UserRepository;
+import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.aspectj.lang.annotation.Around;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,16 +34,23 @@ public class PlaceService {
 
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private MediaStorageService mediaStorageService;
 
 
-    public PlaceResponseDto createPlace(PlaceRequestDto placeRequestDto, String ownerEmail) {
+    public PlaceResponseDto createPlace(PlaceRequestDto placeRequestDto, String ownerEmail) throws FileUploadException {
         User owner = userRepository.findByEmail(ownerEmail)
                 .orElseThrow(() -> new ResourceNotFoundException("Owner not found"));
 
         Place place = new Place();
         place.setName(placeRequestDto.getName());
         place.setAddress(placeRequestDto.getAddress());
-        place.setImage(placeRequestDto.getImage());
+
+        if (placeRequestDto.getImage() != null && !placeRequestDto.getImage().isEmpty()) {
+            String imageUrl = mediaStorageService.uploadFile(placeRequestDto.getImage());
+            place.setImageUrl(imageUrl);
+        }
+
         place.setDescription(placeRequestDto.getDescription());
         place.setCategory(placeRequestDto.getCategory());
         place.setOpeningHours(placeRequestDto.getOpeningHours());
@@ -54,8 +63,11 @@ public class PlaceService {
         place.setCoordinate(coordinate);
 
         Place savedPlace = placeRepository.save(place);
+
         return mapToResponseDto(savedPlace);
     }
+
+
 
     public PlaceResponseDto getPlaceById(Long id) {
         Place place = placeRepository.findById(id)
@@ -63,13 +75,18 @@ public class PlaceService {
         return mapToResponseDto(place);
     }
 
-    public PlaceResponseDto updatePlace(Long id, PlaceRequestDto placeRequestDto) {
+    public PlaceResponseDto updatePlace(Long id, PlaceRequestDto placeRequestDto) throws FileUploadException {
         Place existingPlace = placeRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Place not found"));
 
         existingPlace.setName(placeRequestDto.getName());
         existingPlace.setAddress(placeRequestDto.getAddress());
-        existingPlace.setImage(placeRequestDto.getImage());
+
+        if (placeRequestDto.getImage() != null && !placeRequestDto.getImage().isEmpty()) {
+            String imageUrl = mediaStorageService.uploadFile(placeRequestDto.getImage());
+            existingPlace.setImageUrl(imageUrl);
+        }
+
         existingPlace.setDescription(placeRequestDto.getDescription());
         existingPlace.setCategory(placeRequestDto.getCategory());
         existingPlace.setOpeningHours(placeRequestDto.getOpeningHours());
@@ -82,6 +99,7 @@ public class PlaceService {
         Place updatedPlace = placeRepository.save(existingPlace);
         return mapToResponseDto(updatedPlace);
     }
+
 
     public void deletePlace(Long id) {
         placeRepository.deleteById(id);
@@ -112,7 +130,7 @@ public class PlaceService {
         responseDto.setId(place.getId());
         responseDto.setName(place.getName());
         responseDto.setAddress(place.getAddress());
-        responseDto.setImage(place.getImage());
+        responseDto.setImageUrl(place.getImageUrl());
         responseDto.setDescription(place.getDescription());
         responseDto.setCategory(place.getCategory());
         responseDto.setOpeningHours(place.getOpeningHours());

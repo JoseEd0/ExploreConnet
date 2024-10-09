@@ -31,7 +31,7 @@ public class Place {
     private String address;
 
     @Column
-    private String image;
+    private String imageUrl;
 
     @Column(nullable = false)
     private String description;

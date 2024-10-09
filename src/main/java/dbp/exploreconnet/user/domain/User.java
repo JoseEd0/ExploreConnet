@@ -45,6 +45,7 @@ public class User implements UserDetails {
     @NotNull
     private String profileImageUrl = "https://exploreconnect-bucket.s3.us-east-2.amazonaws.com/default-profile-image.png";
 
+
     private String expoPushToken;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)

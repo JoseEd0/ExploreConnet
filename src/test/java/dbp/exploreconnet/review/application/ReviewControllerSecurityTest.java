@@ -1,4 +1,4 @@
-package dbp.exploreconnet.place.application;
+package dbp.exploreconnet.review.application;
 
-public class PlaceControllerSecurityTest {
+public class ReviewControllerSecurityTest {
 }

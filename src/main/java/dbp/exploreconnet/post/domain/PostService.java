@@ -7,6 +7,7 @@ import dbp.exploreconnet.mediaStorage.domain.MediaStorageService;
 import dbp.exploreconnet.place.domain.Place;
 import dbp.exploreconnet.place.dto.PlaceResponseForPostDto;
 import dbp.exploreconnet.place.infrastructure.PlaceRepository;
+import dbp.exploreconnet.post.dto.PostMediaUpdateRequestDto;
 import dbp.exploreconnet.post.dto.PostRequestDto;
 import dbp.exploreconnet.post.dto.PostResponseDto;
 import dbp.exploreconnet.post.dto.PostUpdateDto;
@@ -23,6 +24,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -58,7 +60,7 @@ public class PostService {
             PlaceResponseForPostDto placeDto = new PlaceResponseForPostDto();
             placeDto.setId(post.getPlace().getId());
             placeDto.setName(post.getPlace().getName());
-            placeDto.setImage(post.getPlace().getImage());
+            placeDto.setImage(post.getPlace().getImageUrl());
             placeDto.setDescription(post.getPlace().getDescription());
             placeDto.setCategory(post.getPlace().getCategory());
             placeDto.setOpeningHours(post.getPlace().getOpeningHours());
@@ -147,37 +149,46 @@ public class PostService {
 
 
     @Transactional
-    public void createPosts(List<PostRequestDto> postRequestDtos) throws FileUploadException {
-        for (PostRequestDto postRequestDto : postRequestDtos) {
-            createPost(postRequestDto);
-        }
-
-        userRepository.saveAll(postRequestDtos.stream()
-                .map(PostRequestDto::getUserId)
-                .distinct()
-                .map(userId -> userRepository.findById(userId)
-                        .orElseThrow(() -> new ResourceNotFoundException("User not found")))
-                .collect(Collectors.toList()));
-    }
-
-    public void changeMedia(Long id, PostUpdateDto media) {
+    public void changeMedia(Long id, PostMediaUpdateRequestDto mediaRequestDto) throws FileUploadException {
         String email = authorizationUtils.getCurrentUserEmail();
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+        // Verificar que el usuario sea el propietario o administrador
         if (!authorizationUtils.isAdminOrResourceOwner(user.getId())) {
             throw new UnauthorizedOperationException("Only the owner can change the media of this post");
         }
-        Post post = postRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Post not found"));
-        if (media.getImageUrl() != null) {
-            post.setImageUrl(media.getImageUrl());
+
+        // Obtener el post
+        Post post = postRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Post not found"));
+
+        try {
+            // Procesar la imagen si se proporciona
+            if (mediaRequestDto.getImage() != null && !mediaRequestDto.getImage().isEmpty()) {
+                String imageUrl = mediaStorageService.uploadFile(mediaRequestDto.getImage());
+                post.setImageUrl(imageUrl);
+            }
+
+            // Procesar el video si se proporciona
+            if (mediaRequestDto.getVideo() != null && !mediaRequestDto.getVideo().isEmpty()) {
+                String videoUrl = mediaStorageService.uploadFile(mediaRequestDto.getVideo());
+                post.setVideoUrl(videoUrl);
+            }
+
+        } catch (IOException e) {
+            throw new FileUploadException("Failed to upload file", e);
         }
-        if (media.getVideoUrl() != null) {
-            post.setVideoUrl(media.getVideoUrl());
+
+        // Actualizar la descripción si se proporciona
+        if (mediaRequestDto.getDescription() != null && !mediaRequestDto.getDescription().isEmpty()) {
+            post.setDescription(mediaRequestDto.getDescription());
         }
-        if (media.getDescription() != null) {
-            post.setDescription(media.getDescription());
-        }
+
         postRepository.save(post);
     }
+
+
 
     public void changeContent(Long id, Long placeId) {
         String email = authorizationUtils.getCurrentUserEmail();

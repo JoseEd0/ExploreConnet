@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class UserRepositoryTest extends AbstractContainerBaseTest {
 
     @Autowired
-    private UserRepository<User> userRepository;
+    private UserRepository userRepository;
 
     @Autowired
     private TestEntityManager testEntityManager;
