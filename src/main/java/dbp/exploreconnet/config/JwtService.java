@@ -35,6 +35,12 @@ public class JwtService {
         return JWT.decode(token).getSubject();
     }
 
+    public String extractUserEmail(String token) {return JWT.decode(token).getSubject();}
+
+
+
+
+
     public List<Role> extractRoles(String token) {
         String roleString = JWT.decode(token).getClaim("role").asString();
         return List.of(Role.valueOf(roleString));
