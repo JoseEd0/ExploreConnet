@@ -8,6 +8,8 @@ import dbp.exploreconnet.place.infrastructure.PlaceRepository;
 import dbp.exploreconnet.promotion.dto.NewPromotionDto;
 import dbp.exploreconnet.promotion.dto.PromotionResponseDto;
 import dbp.exploreconnet.promotion.infrastructure.PromotionRepository;
+import dbp.exploreconnet.user.domain.User;
+import dbp.exploreconnet.user.infrastructure.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +24,9 @@ public class PromotionService {
 
     @Autowired
     private PlaceRepository placeRepository;
+
+    @Autowired
+    private UserRepository<User> userRepository;
 
     @Autowired
     private AuthorizationUtils authorizationUtils;

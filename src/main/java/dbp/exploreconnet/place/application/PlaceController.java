@@ -28,7 +28,6 @@ public class PlaceController {
         return ResponseEntity.ok(placeService.createPlace(placeRequestDto, ownerEmail));
     }
 
-    @PreAuthorize("hasAnyAuthority('USER', 'OWNER','GUEST')")
     @GetMapping("/{id}")
     public ResponseEntity<PlaceResponseDto> getPlaceById(@PathVariable Long id) {
         return ResponseEntity.ok(placeService.getPlaceById(id));
