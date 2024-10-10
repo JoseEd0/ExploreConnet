@@ -77,7 +77,7 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
 
-      # Ejecuta cada prueba de seguridad individualmente
+      # Ejecuta cada prueba de persistencia individualmente
       - name: CommentRepositoryTest
         run: mvn -Dtest=CommentRepositoryTest test
 
