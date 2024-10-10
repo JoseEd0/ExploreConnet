@@ -46,7 +46,7 @@ jobs:
         run: mvn -Dtest=*ControllerSecurityTest test
         # Ejecuta solo los tests de seguridad (ajusta el patrón según el nombre de tus tests)
 
-      - name: 📄 Upload Test Results
+      - name: 📄 Upload Test Results 
         if: always()  # Ejecuta este paso sin importar si los tests pasan o fallan
         uses: actions/upload-artifact@v2
         with:
