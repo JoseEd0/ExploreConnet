@@ -19,7 +19,7 @@ jobs:
       - name: Set up JDK 17
         uses: actions/setup-java@v2
         with:
-          java-version: '21' .
+          java-version: '21'  # Ajusta la versión de Java según tu proyecto (por ejemplo, '11' o '8').
 
       - name: Cache Maven packages
         uses: actions/cache@v2
@@ -30,4 +30,4 @@ jobs:
             ${{ runner.os }}-maven-
 
       - name: Build and Test
-        run: mvn clean verify
+        run: mvn clean verify  # Ejecuta los tests y verifica el build de Maven.
