@@ -73,9 +73,7 @@ public class PostService {
 
 
     public PostResponseDto getPostById(Long id) {
-        if (!authorizationUtils.isAdmin()) {
-            throw new UnauthorizedOperationException("Only an admin can access this post");
-        }
+
         Post post = postRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Post not found"));
         return getPostResponseDto(post);
     }
@@ -100,9 +98,7 @@ public class PostService {
     }
 
     public List<PostResponseDto> getPostsByPlaceId(Long placeId) {
-        if (!authorizationUtils.isAdmin()) {
-            throw new UnauthorizedOperationException("Only an admin can access this post");
-        }
+
         List<Post> posts = postRepository.findByPlaceId(placeId);
         return posts.stream().map(this::getPostResponseDto).collect(Collectors.toList());
     }

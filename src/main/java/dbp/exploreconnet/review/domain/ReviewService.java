@@ -98,13 +98,14 @@ public class ReviewService {
                 .collect(Collectors.toList());
     }
 
-    private ReviewResponseDto mapToResponseDto(Review review) {
-        ReviewResponseDto responseDto = new ReviewResponseDto();
-        responseDto.setId(review.getId());
-        responseDto.setComment(review.getComment());
-        responseDto.setRating(review.getRating());
-        responseDto.setPlaceId(review.getPlace().getId());
-        responseDto.setPlaceName(review.getPlace().getName());
-        return responseDto;
-    }
+        private ReviewResponseDto mapToResponseDto(Review review) {
+            ReviewResponseDto responseDto = new ReviewResponseDto();
+            responseDto.setId(review.getId());
+            responseDto.setComment(review.getComment());
+            responseDto.setRating(review.getRating());
+            responseDto.setPlaceId(review.getPlace().getId());
+            responseDto.setPlaceName(review.getPlace().getName());
+            return responseDto;
+        }
+
 }

@@ -125,51 +125,51 @@ public class PlaceService {
     }
 
 
-    private PlaceResponseDto mapToResponseDto(Place place) {
-        PlaceResponseDto responseDto = new PlaceResponseDto();
-        responseDto.setId(place.getId());
-        responseDto.setName(place.getName());
-        responseDto.setAddress(place.getAddress());
-        responseDto.setImageUrl(place.getImageUrl());
-        responseDto.setDescription(place.getDescription());
-        responseDto.setCategory(place.getCategory());
-        responseDto.setOpeningHours(place.getOpeningHours());
+        private PlaceResponseDto mapToResponseDto(Place place) {
+            PlaceResponseDto responseDto = new PlaceResponseDto();
+            responseDto.setId(place.getId());
+            responseDto.setName(place.getName());
+            responseDto.setAddress(place.getAddress());
+            responseDto.setImageUrl(place.getImageUrl());
+            responseDto.setDescription(place.getDescription());
+            responseDto.setCategory(place.getCategory());
+            responseDto.setOpeningHours(place.getOpeningHours());
 
-        List<ReviewResponseDto> reviews = place.getReviews() != null
-                ? place.getReviews().stream()
-                .map(review -> {
-                    ReviewResponseDto reviewDto = new ReviewResponseDto();
-                    reviewDto.setId(review.getId());
-                    reviewDto.setComment(review.getComment());
-                    reviewDto.setRating(review.getRating());
-                    return reviewDto;
-                })
-                .collect(Collectors.toList())
-                : Collections.emptyList();
+            List<ReviewResponseDto> reviews = place.getReviews() != null
+                    ? place.getReviews().stream()
+                    .map(review -> {
+                        ReviewResponseDto reviewDto = new ReviewResponseDto();
+                        reviewDto.setId(review.getId());
+                        reviewDto.setComment(review.getComment());
+                        reviewDto.setRating(review.getRating());
+                        return reviewDto;
+                    })
+                    .collect(Collectors.toList())
+                    : Collections.emptyList();
 
-        responseDto.setReviews(reviews);
+            responseDto.setReviews(reviews);
 
-        List<PromotionResponseDto> promotions = place.getPromotions() != null
-                ? place.getPromotions().stream()
-                .map(promotion -> {
-                    PromotionResponseDto promotionDto = new PromotionResponseDto();
-                    promotionDto.setId(promotion.getId());
-                    promotionDto.setDescription(promotion.getDescription());
-                    promotionDto.setDiscount(promotion.getDiscount());
-                    promotionDto.setStartDate(promotion.getStartDate());
-                    promotionDto.setEndDate(promotion.getEndDate());
-                    return promotionDto;
-                })
-                .collect(Collectors.toList())
-                : Collections.emptyList();
+            List<PromotionResponseDto> promotions = place.getPromotions() != null
+                    ? place.getPromotions().stream()
+                    .map(promotion -> {
+                        PromotionResponseDto promotionDto = new PromotionResponseDto();
+                        promotionDto.setId(promotion.getId());
+                        promotionDto.setDescription(promotion.getDescription());
+                        promotionDto.setDiscount(promotion.getDiscount());
+                        promotionDto.setStartDate(promotion.getStartDate());
+                        promotionDto.setEndDate(promotion.getEndDate());
+                        return promotionDto;
+                    })
+                    .collect(Collectors.toList())
+                    : Collections.emptyList();
 
-        responseDto.setPromotions(promotions);
+            responseDto.setPromotions(promotions);
 
-        CoordinateDto coordinateDto = new CoordinateDto();
-        coordinateDto.setLatitude(place.getCoordinate().getLatitude());
-        coordinateDto.setLongitude(place.getCoordinate().getLongitude());
-        responseDto.setCoordinate(coordinateDto);
+            CoordinateDto coordinateDto = new CoordinateDto();
+            coordinateDto.setLatitude(place.getCoordinate().getLatitude());
+            coordinateDto.setLongitude(place.getCoordinate().getLongitude());
+            responseDto.setCoordinate(coordinateDto);
 
-        return responseDto;
+            return responseDto;
+        }
     }
-}

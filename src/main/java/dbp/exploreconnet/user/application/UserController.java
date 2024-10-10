@@ -60,6 +60,7 @@ public class UserController {
         return ResponseEntity.ok(userService.getAllUsers());
     }
 
+
     @PreAuthorize("hasAnyAuthority('USER', 'OWNER')")
     @GetMapping("/me")
     public ResponseEntity<UserResponseDto> getCurrentUser() {
