@@ -79,3 +79,4 @@ jobs:
 
       - name: UserRepositoryTest
         run: mvn -Dtest=UserRepositoryTest test
+
