@@ -16,10 +16,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Set up JDK 17
+      - name: Set up JDK 21
         uses: actions/setup-java@v2
         with:
-          java-version: '21'  # Ajusta la versión de Java según tu proyecto (por ejemplo, '11' o '8').
+          java-version: '21' 
+          distribution: 'temurin"
 
       - name: Cache Maven packages
         uses: actions/cache@v2
