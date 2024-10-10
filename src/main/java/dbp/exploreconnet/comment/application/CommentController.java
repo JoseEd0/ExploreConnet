@@ -23,11 +23,11 @@ public class CommentController {
         return ResponseEntity.ok(commentService.getCommentsByPostId(postId, page, size));
     }
 
-    @PreAuthorize("hasAnyAuthority('USER', 'OWNER')")
+    @PreAuthorize("hasAnyAuthority('ADMIN','USER', 'OWNER')")
     @PostMapping
     public ResponseEntity<Void> createComment(@RequestBody CommentRequestDto commentRequestDto) {
         commentService.createComment(commentRequestDto);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok().build();
     }
 
     @PreAuthorize("hasAnyAuthority('USER', 'OWNER')")

@@ -28,7 +28,7 @@ public class PostController {
         return ResponseEntity.ok(postService.getPostsByPlaceId(placeId));
     }
 
-    @PreAuthorize("hasAnyAuthority('USER', 'OWNER','GUEST')")
+    @PreAuthorize("hasAnyAuthority('ADMIN','USER', 'OWNER','GUEST')")
     @GetMapping("/{id}")
     public ResponseEntity<PostResponseDto> getPostById(@PathVariable Long id) {
         return ResponseEntity.ok(postService.getPostById(id));
