@@ -2,14 +2,17 @@ package dbp.exploreconnet.user.application;
 
 import dbp.exploreconnet.user.domain.User;
 import dbp.exploreconnet.user.domain.UserService;
+import dbp.exploreconnet.user.dto.UserProfilePhotoUpdateDto;
 import dbp.exploreconnet.user.dto.UserRequestDto;
 import dbp.exploreconnet.user.dto.UserResponseDto;
+import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -33,6 +36,16 @@ public class UserController {
     }
 
 
+    @PreAuthorize("hasAuthority('USER') or hasAuthority('ADMIN')")
+    @PutMapping("/{id}/profile-photo")
+    public ResponseEntity<UserResponseDto> updateProfilePhoto(@PathVariable Long id, @ModelAttribute UserProfilePhotoUpdateDto userProfilePhotoUpdateDto) throws FileUploadException {
+        UserResponseDto updatedUser = userService.updateProfilePhoto(id, userProfilePhotoUpdateDto.getProfilePhoto());
+        return ResponseEntity.ok(updatedUser);
+    }
+
+
+
+
     @PreAuthorize("hasAuthority('USER')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
@@ -46,6 +59,7 @@ public class UserController {
     public ResponseEntity<List<UserResponseDto>> getAllUsers() {
         return ResponseEntity.ok(userService.getAllUsers());
     }
+
 
     @PreAuthorize("hasAnyAuthority('USER', 'OWNER')")
     @GetMapping("/me")

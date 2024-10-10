@@ -1,9 +1,9 @@
 package dbp.exploreconnet.promotion.application;
 
-import dbp.exploreconnet.promotion.domain.Promotion;
 import dbp.exploreconnet.promotion.domain.PromotionService;
 import dbp.exploreconnet.promotion.dto.NewPromotionDto;
 import dbp.exploreconnet.promotion.dto.PromotionResponseDto;
+import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -20,7 +20,7 @@ public class PromotionController {
 
     @PreAuthorize("hasAuthority('OWNER')")
     @PostMapping
-    public ResponseEntity<PromotionResponseDto> createPromotion(@RequestBody NewPromotionDto newPromotionDto) {
+    public ResponseEntity<PromotionResponseDto> createPromotion(@ModelAttribute NewPromotionDto newPromotionDto) throws FileUploadException {
         return ResponseEntity.ok(promotionService.createPromotion(newPromotionDto));
     }
 
@@ -32,7 +32,7 @@ public class PromotionController {
 
     @PreAuthorize("hasAuthority('OWNER')")
     @PutMapping("/{id}")
-    public ResponseEntity<PromotionResponseDto> updatePromotion(@PathVariable Long id, @RequestBody NewPromotionDto newPromotionDto) {
+    public ResponseEntity<PromotionResponseDto> updatePromotion(@PathVariable Long id, @ModelAttribute NewPromotionDto newPromotionDto) throws FileUploadException{
         return ResponseEntity.ok(promotionService.updatePromotion(id, newPromotionDto));
     }
 

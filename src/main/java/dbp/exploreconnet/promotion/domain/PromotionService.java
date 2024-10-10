@@ -3,13 +3,13 @@ package dbp.exploreconnet.promotion.domain;
 
 import dbp.exploreconnet.auth.utils.AuthorizationUtils;
 import dbp.exploreconnet.exceptions.ResourceNotFoundException;
+import dbp.exploreconnet.mediaStorage.domain.MediaStorageService;
 import dbp.exploreconnet.place.domain.Place;
 import dbp.exploreconnet.place.infrastructure.PlaceRepository;
 import dbp.exploreconnet.promotion.dto.NewPromotionDto;
 import dbp.exploreconnet.promotion.dto.PromotionResponseDto;
 import dbp.exploreconnet.promotion.infrastructure.PromotionRepository;
-import dbp.exploreconnet.user.domain.User;
-import dbp.exploreconnet.user.infrastructure.UserRepository;
+import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,13 +26,13 @@ public class PromotionService {
     private PlaceRepository placeRepository;
 
     @Autowired
-    private UserRepository<User> userRepository;
-
-    @Autowired
     private AuthorizationUtils authorizationUtils;
 
+    @Autowired
+    private MediaStorageService mediaStorageService;
 
-    public PromotionResponseDto createPromotion(NewPromotionDto newPromotionDto) {
+
+    public PromotionResponseDto createPromotion(NewPromotionDto newPromotionDto) throws FileUploadException {
         Place place = placeRepository.findById(newPromotionDto.getPlaceId())
                 .orElseThrow(() -> new ResourceNotFoundException("Place not found"));
 
@@ -43,10 +43,16 @@ public class PromotionService {
         promotion.setEndDate(newPromotionDto.getEndDate());
         promotion.setPlace(place);
 
+        if (newPromotionDto.getImage() != null && !newPromotionDto.getImage().isEmpty()) {
+            String imageUrl = mediaStorageService.uploadFile(newPromotionDto.getImage());
+            promotion.setImageUrl(imageUrl);
+        }
+
         Promotion savedPromotion = promotionRepository.save(promotion);
 
         return mapToResponseDto(savedPromotion);
     }
+
 
     public PromotionResponseDto getPromotionById(Long id) {
         Promotion promotion = promotionRepository.findById(id)
@@ -54,7 +60,7 @@ public class PromotionService {
         return mapToResponseDto(promotion);
     }
 
-    public PromotionResponseDto updatePromotion(Long id, NewPromotionDto newPromotionDto) {
+    public PromotionResponseDto updatePromotion(Long id, NewPromotionDto newPromotionDto) throws FileUploadException {
         Promotion existingPromotion = promotionRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Promotion not found"));
 
@@ -63,10 +69,16 @@ public class PromotionService {
         existingPromotion.setStartDate(newPromotionDto.getStartDate());
         existingPromotion.setEndDate(newPromotionDto.getEndDate());
 
+        if (newPromotionDto.getImage() != null && !newPromotionDto.getImage().isEmpty()) {
+            String imageUrl = mediaStorageService.uploadFile(newPromotionDto.getImage());
+            existingPromotion.setImageUrl(imageUrl);
+        }
+
         Promotion updatedPromotion = promotionRepository.save(existingPromotion);
 
         return mapToResponseDto(updatedPromotion);
     }
+
 
     public void deletePromotion(Long id) {
         promotionRepository.deleteById(id);
@@ -105,6 +117,8 @@ public class PromotionService {
         responseDto.setStartDate(promotion.getStartDate());
         responseDto.setEndDate(promotion.getEndDate());
         responseDto.setPlaceName(promotion.getPlace().getName());
+        responseDto.setImageUrl(promotion.getImageUrl());
+
         return responseDto;
     }
 }

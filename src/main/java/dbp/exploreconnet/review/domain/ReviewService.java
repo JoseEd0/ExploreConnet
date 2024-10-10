@@ -26,12 +26,12 @@ public class ReviewService {
     @Autowired
     private PlaceRepository placeRepository;
     @Autowired
-    private UserRepository<User> userRepository;
+    private UserRepository userRepository;
     @Autowired
     private AuthorizationUtils authorizationUtils;
 
     @Autowired
-    public ReviewService(ReviewRepository reviewRepository, UserRepository<User> userRepository, PlaceRepository placeRepository, AuthorizationUtils authorizationUtils) {
+    public ReviewService(ReviewRepository reviewRepository, UserRepository userRepository, PlaceRepository placeRepository, AuthorizationUtils authorizationUtils) {
         this.reviewRepository = reviewRepository;
         this.userRepository = userRepository;
         this.placeRepository = placeRepository;
@@ -98,13 +98,14 @@ public class ReviewService {
                 .collect(Collectors.toList());
     }
 
-    private ReviewResponseDto mapToResponseDto(Review review) {
-        ReviewResponseDto responseDto = new ReviewResponseDto();
-        responseDto.setId(review.getId());
-        responseDto.setComment(review.getComment());
-        responseDto.setRating(review.getRating());
-        responseDto.setPlaceId(review.getPlace().getId());
-        responseDto.setPlaceName(review.getPlace().getName());
-        return responseDto;
-    }
+        private ReviewResponseDto mapToResponseDto(Review review) {
+            ReviewResponseDto responseDto = new ReviewResponseDto();
+            responseDto.setId(review.getId());
+            responseDto.setComment(review.getComment());
+            responseDto.setRating(review.getRating());
+            responseDto.setPlaceId(review.getPlace().getId());
+            responseDto.setPlaceName(review.getPlace().getName());
+            return responseDto;
+        }
+
 }

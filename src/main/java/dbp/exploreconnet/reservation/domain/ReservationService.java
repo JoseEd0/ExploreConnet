@@ -30,7 +30,7 @@ public class ReservationService {
     private PlaceRepository placeRepository;
 
     @Autowired
-    private UserRepository<User> userRepository;
+    private UserRepository userRepository;
     @Autowired
     private AuthorizationUtils authorizationUtils;
 

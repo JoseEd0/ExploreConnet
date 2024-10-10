@@ -29,6 +29,9 @@ public class Promotion {
     @Column(nullable = false)
     private LocalDateTime endDate;
 
+    @Column
+    private String imageUrl;
+
     @ManyToOne
     @JoinColumn(name = "place_id", nullable = false)
     private Place place;

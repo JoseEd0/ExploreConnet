@@ -28,6 +28,14 @@ public class AuthorizationUtils {
         return user.getRole().equals(Role.OWNER);
     }
 
+    public boolean isAdmin() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        String username = userDetails.getUsername();
+        User user = userService.findByEmail(username);
+        return user.getRole().equals(Role.ADMIN);
+    }
+
     public boolean isAdminOrResourceOwner(Long id) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();

@@ -4,6 +4,9 @@ import dbp.exploreconnet.place.domain.Place;
 import dbp.exploreconnet.place.domain.PlaceService;
 import dbp.exploreconnet.place.dto.PlaceRequestDto;
 import dbp.exploreconnet.place.dto.PlaceResponseDto;
+import dbp.exploreconnet.post.dto.PostMediaUpdateRequestDto;
+import dbp.exploreconnet.post.dto.PostRequestDto;
+import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -22,7 +25,7 @@ public class PlaceController {
 
     @PreAuthorize("hasAuthority('OWNER')")
     @PostMapping
-    public ResponseEntity<PlaceResponseDto> createPlace(@RequestBody PlaceRequestDto placeRequestDto) {
+    public ResponseEntity<PlaceResponseDto> createPlace(@ModelAttribute PlaceRequestDto placeRequestDto) throws FileUploadException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String ownerEmail = authentication.getName();
         return ResponseEntity.ok(placeService.createPlace(placeRequestDto, ownerEmail));
@@ -35,10 +38,9 @@ public class PlaceController {
 
     @PreAuthorize("hasAuthority('OWNER')")
     @PutMapping("/{id}")
-    public ResponseEntity<PlaceResponseDto> updatePlace(@PathVariable Long id, @RequestBody PlaceRequestDto placeRequestDto) {
+    public ResponseEntity<PlaceResponseDto> updatePlace(@PathVariable Long id, @ModelAttribute PlaceRequestDto placeRequestDto) throws FileUploadException {
         return ResponseEntity.ok(placeService.updatePlace(id, placeRequestDto));
     }
-
 
     @PreAuthorize("hasAuthority('OWNER')")
     @DeleteMapping("/{id}")

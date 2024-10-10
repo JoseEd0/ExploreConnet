@@ -23,6 +23,7 @@ public class ReservationController {
     @Autowired
     private ReservationService reservationService;
 
+    @PreAuthorize("hasAuthority('USER')")
     @PostMapping
     public ResponseEntity<ReservationResponseDto> createReservation(@RequestBody ReservationRequestDto reservationRequest) {
         ReservationResponseDto response = reservationService.createReservation(reservationRequest);

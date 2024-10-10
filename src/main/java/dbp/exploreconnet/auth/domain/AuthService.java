@@ -25,7 +25,7 @@ import java.time.LocalDateTime;
 public class AuthService {
 
     @Autowired
-    private UserRepository<User> userRepository;
+    private UserRepository userRepository;
     @Autowired
     private JwtService jwtService;
     @Autowired
