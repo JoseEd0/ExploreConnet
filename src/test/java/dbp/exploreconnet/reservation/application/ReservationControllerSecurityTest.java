@@ -43,6 +43,7 @@ class ReservationControllerSecurityTest {
                 org.mockito.ArgumentMatchers.anyString()
         );
 
+
         // Crear usuario OWNER único
         String uniqueOwnerEmail = "owner" + System.currentTimeMillis() + "@example.com";
         String signUpPayloadOwner = "{\"email\":\"" + uniqueOwnerEmail + "\", \"name\":\"Test Owner\", \"password\":\"password123\", \"role\":\"OWNER\"}";
