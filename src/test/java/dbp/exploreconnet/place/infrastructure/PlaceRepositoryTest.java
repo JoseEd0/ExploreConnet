@@ -1,6 +1,7 @@
 package dbp.exploreconnet.place.infrastructure;
-
 import dbp.exploreconnet.AbstractContainerBaseTest;
+import dbp.exploreconnet.coordinate.domain.Coordinate;
+import dbp.exploreconnet.coordinate.dto.CoordinateDto;
 import dbp.exploreconnet.place.domain.Place;
 import dbp.exploreconnet.place.domain.PlaceCategory;
 import dbp.exploreconnet.promotion.domain.Promotion;
@@ -15,14 +16,143 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDateTime;
 import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.*;
-
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 public class PlaceRepositoryTest extends AbstractContainerBaseTest {
+    @Autowired
+    private PlaceRepository placeRepository;
+    @Autowired
+    private TestEntityManager testEntityManager;
+    private User owner;
+    private Place place;
+    private Review review;
+    private Reservation reservation;
+    private Promotion promotion;
+    private CoordinateDto coordinateDto;
+    @BeforeEach
+    void setUp() {
+        // Crear un User como Owner del Place
+        owner = new User();
+        owner.setFullName("Owner John");
+        owner.setEmail("owner@example.com");
+        owner.setPassword("password123");
+        owner.setRole(Role.OWNER);
+        owner.setCreatedAt(LocalDateTime.now());
+        testEntityManager.persist(owner);
 
+        Coordinate coordinate = new Coordinate();
+        coordinate.setLatitude(40.7308);
+        coordinate.setLongitude(-73.9975);
+        testEntityManager.persist(coordinate);
+        // Crear un Place
+        place = new Place();
+        place.setName("Amazing Restaurant");
+        place.setAddress("123 Main Street");
+        place.setDescription("A top-class restaurant with gourmet meals.");
+        place.setCategory(PlaceCategory.RESTAURANT);
+        place.setOpeningHours("09:00 - 22:00");
+        place.setCoordinate(coordinate);
+        place.setOwner(owner);
+        testEntityManager.persist(place);
+        // Crear un Review
+        review = new Review();
+        review.setUser(owner);
+        review.setPlace(place);
+        review.setComment("Excellent place, great service!");
+        review.setRating(5);
+        testEntityManager.persist(review);
+        // Crear una Reservation
+        reservation = new Reservation();
+        reservation.setUser(owner);
+        reservation.setPlace(place);
+        reservation.setDate(LocalDateTime.now().plusDays(1));
+        reservation.setNumberOfPeople(4);
+        testEntityManager.persist(reservation);
+        // Crear una Promotion
+        promotion = new Promotion();
+        promotion.setDescription("10% discount for lunch meals");
+        promotion.setDiscount(10.0);
+        promotion.setStartDate(LocalDateTime.now());
+        promotion.setEndDate(LocalDateTime.now().plusMonths(1));
+        promotion.setPlace(place);
+        testEntityManager.persist(promotion);
+        testEntityManager.flush();
+    }
+    @Test
+    void testSavePlace() {
+        // Crear un nuevo User como Owner
+        User newOwner = new User();
+        newOwner.setFullName("Jane Doe");
+        newOwner.setEmail("jane@example.com");
+        newOwner.setPassword("password456");
+        newOwner.setRole(Role.OWNER);
+        newOwner.setCreatedAt(LocalDateTime.now());
+        testEntityManager.persist(newOwner);
+
+        // Crear el objeto Coordinate y asignar las coordenadas
+        Coordinate coordinate = new Coordinate();
+        coordinate.setLatitude(40.7308);
+        coordinate.setLongitude(-73.9975);
+        testEntityManager.persist(coordinate);
+
+        // Crear un nuevo Place con el nuevo Owner y asignarle el Coordinate
+        Place newPlace = new Place();
+        newPlace.setName("Cafe Delights");
+        newPlace.setAddress("456 Another Street");
+        newPlace.setDescription("A cozy cafe with excellent pastries.");
+        newPlace.setCategory(PlaceCategory.CAFETERIA);
+        newPlace.setOpeningHours("08:00 - 18:00");
+        newPlace.setOwner(newOwner);  // Asignar el propietario al Place
+        newPlace.setCoordinate(coordinate); // Asignar el objeto Coordinate al Place
+
+        Place savedPlace = placeRepository.save(newPlace);
+
+        assertNotNull(savedPlace.getId());
+        assertEquals("Cafe Delights", savedPlace.getName());
+        assertEquals(newOwner.getId(), savedPlace.getOwner().getId());
+        assertEquals(40.7308, savedPlace.getCoordinate().getLatitude());
+        assertEquals(-73.9975, savedPlace.getCoordinate().getLongitude());
+    }
+
+    @Test
+    void testFindById() {
+        Place foundPlace = placeRepository.findById(place.getId()).orElse(null);
+        assertNotNull(foundPlace);
+        assertEquals(place.getName(), foundPlace.getName());
+        assertEquals(place.getCategory(), foundPlace.getCategory());
+        assertEquals(owner.getId(), foundPlace.getOwner().getId());
+    }
+    @Test
+    void testFindAll() {
+        List<Place> places = placeRepository.findAll();
+        assertEquals(1, places.size());
+    }
+    @Test
+    void testUpdatePlace() {
+        place.setName("Updated Restaurant Name");
+        place.setDescription("Updated description for the restaurant.");
+        placeRepository.save(place);
+        Place updatedPlace = placeRepository.findById(place.getId()).orElse(null);
+        assertNotNull(updatedPlace);
+        assertEquals("Updated Restaurant Name", updatedPlace.getName());
+        assertEquals("Updated description for the restaurant.", updatedPlace.getDescription());
+    }
+    @Test
+    void testDeletePlace() {
+        placeRepository.delete(place);
+        Place foundPlace = placeRepository.findById(place.getId()).orElse(null);
+        assertNull(foundPlace);
+    }
+    @Test
+    void testPlaceWithRelations() {
+        testEntityManager.refresh(place);
+        Place foundPlace = placeRepository.findById(place.getId()).orElse(null);
+        assertNotNull(foundPlace);
+        assertEquals(1, foundPlace.getReviews().size());     // Debe haber 1 Review
+        assertEquals(1, foundPlace.getReservations().size()); // Debe haber 1 Reservation
+        assertEquals(1, foundPlace.getPromotions().size());  // Debe haber 1 Promotion
+    }
 }

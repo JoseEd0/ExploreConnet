@@ -64,4 +64,3 @@ jobs:
       - name: UserControllerSecurityTest
         run: mvn -Dtest=UserControllerSecurityTest test
 
- 
