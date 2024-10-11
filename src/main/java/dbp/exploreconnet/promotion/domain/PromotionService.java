@@ -3,6 +3,7 @@ package dbp.exploreconnet.promotion.domain;
 
 import dbp.exploreconnet.auth.utils.AuthorizationUtils;
 import dbp.exploreconnet.exceptions.ResourceNotFoundException;
+import dbp.exploreconnet.exceptions.UnauthorizedOperationException;
 import dbp.exploreconnet.mediaStorage.domain.MediaStorageService;
 import dbp.exploreconnet.place.domain.Place;
 import dbp.exploreconnet.place.infrastructure.PlaceRepository;
@@ -11,6 +12,7 @@ import dbp.exploreconnet.promotion.dto.PromotionResponseDto;
 import dbp.exploreconnet.promotion.infrastructure.PromotionRepository;
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -33,8 +35,15 @@ public class PromotionService {
 
 
     public PromotionResponseDto createPromotion(NewPromotionDto newPromotionDto) throws FileUploadException {
+        String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+
         Place place = placeRepository.findById(newPromotionDto.getPlaceId())
                 .orElseThrow(() -> new ResourceNotFoundException("Place not found"));
+
+        // Verificar si el usuario autenticado es el propietario del Place
+        if (!place.getOwner().getEmail().equals(userEmail)) {
+            throw new UnauthorizedOperationException("You are not allowed to create promotions for this place");
+        }
 
         Promotion promotion = new Promotion();
         promotion.setDescription(newPromotionDto.getDescription());
@@ -52,6 +61,7 @@ public class PromotionService {
 
         return mapToResponseDto(savedPromotion);
     }
+
 
 
     public PromotionResponseDto getPromotionById(Long id) {
