@@ -69,7 +69,7 @@ public class UserController {
         return ResponseEntity.ok(userService.getUserByEmail(email));
     }
 
-    @PreAuthorize("hasAnyAuthority('USER', 'OWNER')")
+    @PreAuthorize("hasAnyAuthority('USER', 'OWNER','ADMIN')")
     @PutMapping("/edit/me")
     public ResponseEntity<UserResponseDto> updateCurrentUser(@RequestBody UserRequestDto userRequestDto) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

@@ -48,8 +48,7 @@ public class PlaceController {
         placeService.deletePlace(id);
         return ResponseEntity.noContent().build();
     }
-
-    @PreAuthorize("hasAnyAuthority('USER', 'OWNER','GUEST')")
+    
     @GetMapping
     public ResponseEntity<List<PlaceResponseDto>> getAllPlaces() {
         return ResponseEntity.ok(placeService.getAllPlaces());
