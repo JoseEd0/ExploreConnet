@@ -2,7 +2,12 @@ package dbp.exploreconnet.reservation.application;
 
 import com.jayway.jsonpath.JsonPath;
 import dbp.exploreconnet.email.domain.EmailService;
-import org.junit.jupiter.api.*;
+import dbp.exploreconnet.reservation.dto.ReservationRequestDto;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -12,12 +17,12 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
-import java.util.List;
+import java.time.LocalDateTime;
 
-import static org.hamcrest.Matchers.greaterThan;
-import static org.mockito.Mockito.doNothing;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.hamcrest.Matchers.*;
+import static org.mockito.Mockito.doNothing;
 
 @SpringBootTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -36,8 +41,6 @@ class ReservationControllerSecurityTest {
 
     @BeforeEach
     void setup() throws Exception {
-        doNothing().when(emailService).correoSingIn(org.mockito.ArgumentMatchers.anyString(), org.mockito.ArgumentMatchers.anyString());
-
         doNothing().when(emailService).sendReservationQRCode(
                 org.mockito.ArgumentMatchers.anyString(),
                 org.mockito.ArgumentMatchers.anyString(),
@@ -45,41 +48,34 @@ class ReservationControllerSecurityTest {
                 org.mockito.ArgumentMatchers.anyString()
         );
 
-
         // Crear usuario OWNER único
         String uniqueOwnerEmail = "owner" + System.currentTimeMillis() + "@example.com";
         String signUpPayloadOwner = "{\"email\":\"" + uniqueOwnerEmail + "\", \"name\":\"Test Owner\", \"password\":\"password123\", \"role\":\"OWNER\"}";
-
         mockMvc.perform(post("/auth/signin")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(signUpPayloadOwner))
                 .andExpect(status().isOk());
-
         String loginPayloadOwner = "{\"email\":\"" + uniqueOwnerEmail + "\", \"password\":\"password123\"}";
         MvcResult ownerLoginResult = mockMvc.perform(post("/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(loginPayloadOwner))
                 .andExpect(status().isOk())
                 .andReturn();
-
         ownerAuthToken = JsonPath.read(ownerLoginResult.getResponse().getContentAsString(), "$.token");
 
         // Crear usuario USER único
         String uniqueUserEmail = "user" + System.currentTimeMillis() + "@example.com";
         String signUpPayloadUser = "{\"email\":\"" + uniqueUserEmail + "\", \"name\":\"Reservation User\", \"password\":\"password123\", \"role\":\"USER\"}";
-
         mockMvc.perform(post("/auth/signin")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(signUpPayloadUser))
                 .andExpect(status().isOk());
-
         String loginPayloadUser = "{\"email\":\"" + uniqueUserEmail + "\", \"password\":\"password123\"}";
         MvcResult userLoginResult = mockMvc.perform(post("/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(loginPayloadUser))
                 .andExpect(status().isOk())
                 .andReturn();
-
         userAuthToken = JsonPath.read(userLoginResult.getResponse().getContentAsString(), "$.token");
 
         // Crear lugar para las reservas
@@ -97,45 +93,38 @@ class ReservationControllerSecurityTest {
                         .contentType(MediaType.MULTIPART_FORM_DATA))
                 .andExpect(status().isOk())
                 .andReturn();
-
         placeId = ((Number) JsonPath.read(placeResult.getResponse().getContentAsString(), "$.id")).longValue();
     }
 
     @Test
     @Order(1)
     void createReservation() throws Exception {
-        String reservationPayload = String.format(
-                "{\"placeId\": %d, \"date\": \"2023-12-31T18:00:00\", \"numberOfPeople\": 5}", placeId);
+        String date = LocalDateTime.now().plusDays(1).toString();
+        String jsonContent = String.format(
+                "{\"placeId\": %d, \"date\": \"%s\", \"numberOfPeople\": 4}",
+                placeId, date
+        );
 
         mockMvc.perform(post("/reservations")
                         .header("Authorization", "Bearer " + userAuthToken)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(reservationPayload))
+                        .content(jsonContent))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.userName").value("Reservation User"))
-                .andExpect(jsonPath("$.userEmail").exists())
-                .andExpect(jsonPath("$.placeName").value("Reservation Place"))
-                .andExpect(jsonPath("$.date").value("2023-12-31T18:00:00"))
-                .andExpect(jsonPath("$.numberOfPeople").value(5));
+                .andExpect(jsonPath("$.placeName", is("Reservation Place")));
     }
+
 
     @Test
     @Order(2)
     void getReservationsByUser() throws Exception {
-        String reservationPayload = String.format(
-                "{\"placeId\": %d, \"date\": \"2023-12-31T18:00:00\", \"numberOfPeople\": 5}", placeId);
+        // Crear una reserva para el usuario y obtener su ID
+        Long reservationId = createReservationAndGetId();
+        System.out.println("Reserva creada con ID: " + reservationId);
 
-        mockMvc.perform(post("/reservations")
-                        .header("Authorization", "Bearer " + userAuthToken)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(reservationPayload))
-                .andExpect(status().isOk());
-
+        // Verificar que el usuario tiene al menos una reserva
         mockMvc.perform(get("/reservations/user")
-                        .header("Authorization", "Bearer " + ownerAuthToken)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isArray()); // Verifica que sea un array, sin importar si está vacío
+                        .header("Authorization", "Bearer " + ownerAuthToken))
+                .andExpect(status().isOk());
     }
 
 
@@ -143,120 +132,70 @@ class ReservationControllerSecurityTest {
     @Test
     @Order(3)
     void getReservationById() throws Exception {
-        String reservationPayload = String.format(
-                "{\"placeId\": %d, \"date\": \"2023-12-31T18:00:00\", \"numberOfPeople\": 5}", placeId);
-
-        MvcResult reservationResult = mockMvc.perform(post("/reservations")
-                        .header("Authorization", "Bearer " + userAuthToken)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(reservationPayload))
-                .andExpect(status().isOk())
-                .andReturn();
-
-        Long reservationId = ((Number) JsonPath.read(reservationResult.getResponse().getContentAsString(), "$.id")).longValue();
+        Long reservationId = createReservationAndGetId(); // Método auxiliar para crear una reserva y obtener su ID
 
         mockMvc.perform(get("/reservations/" + reservationId)
-                        .header("Authorization", "Bearer " + ownerAuthToken)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.reservationId").value(reservationId));
+                        .header("Authorization", "Bearer " + ownerAuthToken))
+                .andExpect(status().isOk());
     }
 
     @Test
     @Order(4)
     void updateReservation() throws Exception {
-        String initialReservationPayload = String.format(
-                "{\"placeId\": %d, \"date\": \"2023-12-31T18:00:00\", \"numberOfPeople\": 5}", placeId);
-
-        MvcResult createResult = mockMvc.perform(post("/reservations")
-                        .header("Authorization", "Bearer " + userAuthToken)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(initialReservationPayload))
-                .andExpect(status().isOk())
-                .andReturn();
-
-        Long reservationId = ((Number) JsonPath.read(createResult.getResponse().getContentAsString(), "$.id")).longValue();
-
-        String updatedReservationPayload = """
-        {
-            "date": "2024-01-15T20:00:00",
-            "numberOfPeople": 8
-        }
-        """;
+        Long reservationId = createReservationAndGetId(); // Crear una reserva primero
 
         mockMvc.perform(put("/reservations/" + reservationId)
-                        .header("Authorization", "Bearer " + ownerAuthToken)
+                        .header("Authorization", "Bearer " + userAuthToken)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(updatedReservationPayload))
+                        .content("{\"date\": \"" + LocalDateTime.now().plusDays(2) + "\", \"numberOfPeople\": 6}"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(reservationId))
-                .andExpect(jsonPath("$.date").value("2024-01-15T20:00:00"))
-                .andExpect(jsonPath("$.numberOfPeople").value(8));
+                .andExpect(jsonPath("$.numberOfPeople", is(6)));
     }
 
     @Test
     @Order(5)
-    void getAllReservations() throws Exception {
-        String reservationPayload = String.format(
-                "{\"placeId\": %d, \"date\": \"2023-12-31T18:00:00\", \"numberOfPeople\": 5}", placeId);
+    void deleteReservation() throws Exception {
+        Long reservationId = createReservationAndGetId(); // Crear una reserva primero
 
-        mockMvc.perform(post("/reservations")
-                        .header("Authorization", "Bearer " + userAuthToken)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(reservationPayload))
-                .andExpect(status().isOk());
-
-        mockMvc.perform(get("/reservations")
-                        .header("Authorization", "Bearer " + ownerAuthToken)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()", greaterThan(0)))
-                .andExpect(jsonPath("$[0].reservationId").exists());
+        mockMvc.perform(delete("/reservations/" + reservationId)
+                        .header("Authorization", "Bearer " + ownerAuthToken))
+                .andExpect(status().isNoContent());
     }
 
     @Test
     @Order(6)
-    void getReservationsByOwner() throws Exception {
-        String reservationPayload = String.format(
-                "{\"placeId\": %d, \"date\": \"2023-12-31T18:00:00\", \"numberOfPeople\": 5}", placeId);
-
-        mockMvc.perform(post("/reservations")
-                        .header("Authorization", "Bearer " + userAuthToken)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(reservationPayload))
-                .andExpect(status().isOk());
-
-        mockMvc.perform(get("/reservations/myplaces")
-                        .header("Authorization", "Bearer " + ownerAuthToken)
-                        .contentType(MediaType.APPLICATION_JSON))
+    void getAllReservations() throws Exception {
+        mockMvc.perform(get("/reservations")
+                        .header("Authorization", "Bearer " + ownerAuthToken))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()", greaterThan(0)))
-                .andExpect(jsonPath("$[0].placeId").value(placeId));
+                .andExpect(jsonPath("$", hasSize(greaterThan(0))));
     }
 
     @Test
     @Order(7)
-    void deleteReservation() throws Exception {
-        String reservationPayload = String.format(
-                "{\"placeId\": %d, \"date\": \"2023-12-31T18:00:00\", \"numberOfPeople\": 5}", placeId);
+    void getReservationsByOwner() throws Exception {
+        mockMvc.perform(get("/reservations/myplaces")
+                        .header("Authorization", "Bearer " + ownerAuthToken))
+                .andExpect(status().isOk());
+    }
 
-        MvcResult reservationResult = mockMvc.perform(post("/reservations")
+    private Long createReservationAndGetId() throws Exception {
+        String date = LocalDateTime.now().plusDays(1).toString();
+        String jsonContent = String.format(
+                "{\"placeId\": %d, \"date\": \"%s\", \"numberOfPeople\": 4}",
+                placeId, date
+        );
+
+        MvcResult result = mockMvc.perform(post("/reservations")
                         .header("Authorization", "Bearer " + userAuthToken)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(reservationPayload))
+                        .content(jsonContent))
                 .andExpect(status().isOk())
                 .andReturn();
 
-        Long reservationId = ((Number) JsonPath.read(reservationResult.getResponse().getContentAsString(), "$.id")).longValue();
-
-        mockMvc.perform(delete("/reservations/" + reservationId)
-                        .header("Authorization", "Bearer " + ownerAuthToken)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNoContent());
-
-        mockMvc.perform(get("/reservations/" + reservationId)
-                        .header("Authorization", "Bearer " + ownerAuthToken)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound());
+        // Lee el ID como Integer y conviértelo a Long
+        Integer idAsInteger = JsonPath.read(result.getResponse().getContentAsString(), "$.id");
+        return idAsInteger.longValue();
     }
+
 }

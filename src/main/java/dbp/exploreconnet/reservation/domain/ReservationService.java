@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,6 +32,7 @@ public class ReservationService {
 
     @Autowired
     private UserRepository userRepository;
+
     @Autowired
     private AuthorizationUtils authorizationUtils;
 
@@ -56,16 +58,21 @@ public class ReservationService {
 
         Reservation savedReservation = reservationRepository.save(reservation);
 
-        
+        // Obtener el URL del QR code de manera síncrona usando el método asíncrono
+        String qrCodeUrl;
+        try {
+            qrCodeUrl = qrCodeService.generateQRCodeUrl(
+                    savedReservation.getId(),
+                    savedReservation.getDate().toString(),
+                    savedReservation.getNumberOfPeople(),
+                    savedReservation.getPlace().getName(),
+                    savedReservation.getUser().getFullName()
+            ).get();  // `get()` para obtener el valor síncronamente
+        } catch (Exception e) {
+            throw new RuntimeException("Error generating QR code URL", e);
+        }
 
-        String qrCodeUrl = qrCodeService.generateQRCodeUrl(
-                savedReservation.getId(),
-                savedReservation.getDate().toString(),
-                savedReservation.getNumberOfPeople(),
-                savedReservation.getPlace().getName(),
-                savedReservation.getUser().getFullName()
-        );
-
+        // Llamada asíncrona al método de envío de correo
         try {
             emailService.sendReservationQRCode(user.getEmail(), user.getFullName(), savedReservation, qrCodeUrl);
         } catch (MessagingException e) {
@@ -96,7 +103,6 @@ public class ReservationService {
             return responseDto;
         }).collect(Collectors.toList());
     }
-
 
     public ReservationSummaryDto getReservationById(Long id) {
         Reservation reservation = reservationRepository.findById(id)
@@ -159,5 +165,4 @@ public class ReservationService {
                 })
                 .collect(Collectors.toList());
     }
-
 }
