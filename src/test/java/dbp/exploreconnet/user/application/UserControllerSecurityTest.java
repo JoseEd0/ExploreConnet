@@ -228,3 +228,4 @@ class UserControllerSecurityTest {
                 .andExpect(jsonPath("$").isArray());
     }
 }
+
