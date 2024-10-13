@@ -1,10 +1,10 @@
 package dbp.exploreconnet.config;
 
-
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableAsync;
 
-@Configuration
 @EnableAsync
+@Configuration
 public class AsyncConfig {
+
 }

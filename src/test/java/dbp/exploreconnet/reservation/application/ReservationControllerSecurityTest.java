@@ -36,6 +36,8 @@ class ReservationControllerSecurityTest {
 
     @BeforeEach
     void setup() throws Exception {
+        doNothing().when(emailService).correoSingIn(org.mockito.ArgumentMatchers.anyString(), org.mockito.ArgumentMatchers.anyString());
+
         doNothing().when(emailService).sendReservationQRCode(
                 org.mockito.ArgumentMatchers.anyString(),
                 org.mockito.ArgumentMatchers.anyString(),

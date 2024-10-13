@@ -10,8 +10,8 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
-
 import java.nio.charset.StandardCharsets;
+
 
 @Service
 @RequiredArgsConstructor
@@ -38,6 +38,8 @@ public class EmailService {
 
         mailSender.send(message);
     }
+
+    @Async
     public void sendReservationQRCode(String to, String name, Reservation reservation, String qrCodeUrl) throws MessagingException {
         Context context = new Context();
         context.setVariable("name", name);

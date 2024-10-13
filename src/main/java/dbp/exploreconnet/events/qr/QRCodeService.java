@@ -1,15 +1,17 @@
 package dbp.exploreconnet.events.qr;
 
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-
 @Service
 public class QRCodeService {
 
     private static final String QR_API_URL = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=";
 
+
+    @Async
     public String generateQRCodeUrl(Long id, String date, int numberOfPeople, String placeName, String userName) {
         ReservationData data = new ReservationData(id, date, numberOfPeople, placeName, userName);
 
