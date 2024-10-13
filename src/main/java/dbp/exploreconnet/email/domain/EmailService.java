@@ -6,11 +6,12 @@ import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
-
 import java.nio.charset.StandardCharsets;
+
 
 @Service
 @RequiredArgsConstructor
@@ -19,6 +20,7 @@ public class EmailService {
 
     private final SpringTemplateEngine templateEngine;
 
+    @Async
     public void correoSingIn(String to, String name) throws MessagingException {
         Context context = new Context();
         context.setVariable("name", name);
@@ -36,6 +38,8 @@ public class EmailService {
 
         mailSender.send(message);
     }
+
+    @Async
     public void sendReservationQRCode(String to, String name, Reservation reservation, String qrCodeUrl) throws MessagingException {
         Context context = new Context();
         context.setVariable("name", name);

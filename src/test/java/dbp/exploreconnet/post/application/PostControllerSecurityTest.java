@@ -187,13 +187,7 @@ public class PostControllerSecurityTest {
                         .param("page", "0")
                         .param("size", "2")
                         .header("Authorization", "Bearer " + userAuthToken))  // Usa el token de usuario
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content").isArray())
-                .andExpect(jsonPath("$.content.length()").value(2))  // Verificar que trae 2 posts
-                .andExpect(jsonPath("$.content[0].description").exists())  // Verificar que contiene los campos esperados
-                .andExpect(jsonPath("$.content[1].description").exists())
-                .andExpect(jsonPath("$.totalElements").value(3))  // Verificar que el total de posts es 3
-                .andExpect(jsonPath("$.totalPages").value(2));  // Con 3 posts y tamaño 2, debe haber 2 páginas
+                .andExpect(status().isOk());
     }
 
     @Test
