@@ -3,6 +3,8 @@ package dbp.exploreconnet.auth.application;
 import dbp.exploreconnet.auth.domain.AuthService;
 import dbp.exploreconnet.auth.domain.GoogleAuthService;
 import dbp.exploreconnet.auth.dto.*;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RequestMapping("/auth")
 public class AuthController {
+
     private final AuthService authenticationService;
     private final GoogleAuthService googleAuthService;
 
@@ -38,4 +41,9 @@ public class AuthController {
         return ResponseEntity.ok(isValid);
     }
 
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout(HttpServletRequest request, HttpServletResponse response) {
+        authenticationService.logout(request, response);
+        return ResponseEntity.ok("Logged out successfully");
+    }
 }

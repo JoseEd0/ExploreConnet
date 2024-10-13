@@ -31,7 +31,6 @@ public class PlaceController {
         return ResponseEntity.ok(placeService.createPlace(placeRequestDto, ownerEmail));
     }
 
-    @PreAuthorize("hasAnyAuthority('USER', 'OWNER','GUEST')")
     @GetMapping("/{id}")
     public ResponseEntity<PlaceResponseDto> getPlaceById(@PathVariable Long id) {
         return ResponseEntity.ok(placeService.getPlaceById(id));
@@ -49,8 +48,7 @@ public class PlaceController {
         placeService.deletePlace(id);
         return ResponseEntity.noContent().build();
     }
-
-    @PreAuthorize("hasAnyAuthority('USER', 'OWNER','GUEST')")
+    
     @GetMapping
     public ResponseEntity<List<PlaceResponseDto>> getAllPlaces() {
         return ResponseEntity.ok(placeService.getAllPlaces());

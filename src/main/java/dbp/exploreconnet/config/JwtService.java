@@ -7,6 +7,7 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import dbp.exploreconnet.user.domain.Role;  // Importar el enum Role
 import dbp.exploreconnet.user.domain.User;
 import dbp.exploreconnet.user.domain.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -19,7 +20,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,6 +33,8 @@ public class JwtService {
     private String secret;
 
     private final UserService userService;
+
+    private Set<String> invalidatedTokens = new HashSet<>();
 
     public String extractUsername(String token) {
         return JWT.decode(token).getSubject();
@@ -44,6 +49,18 @@ public class JwtService {
     public List<Role> extractRoles(String token) {
         String roleString = JWT.decode(token).getClaim("role").asString();
         return List.of(Role.valueOf(roleString));
+    }
+
+    public String resolveToken(HttpServletRequest request) {
+        String bearerToken = request.getHeader("Authorization");
+        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+            return bearerToken.substring(7);
+        }
+        return null;
+    }
+
+    public void invalidateToken(String token) {
+        invalidatedTokens.add(token);
     }
 
     public String generateToken(UserDetails data) {

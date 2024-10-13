@@ -9,6 +9,8 @@ import dbp.exploreconnet.exceptions.UserAlreadyExistException;
 import dbp.exploreconnet.user.domain.Role;
 import dbp.exploreconnet.user.domain.User;
 import dbp.exploreconnet.user.infrastructure.UserRepository;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
@@ -71,4 +73,12 @@ public class AuthService {
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
         return passwordEncoder.matches(password, user.getPassword());
     }
+
+    public void logout(HttpServletRequest request, HttpServletResponse response) {
+        String token = jwtService.resolveToken(request);
+        if (token != null) {
+            jwtService.invalidateToken(token);
+        }
+    }
+
 }
