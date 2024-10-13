@@ -141,22 +141,23 @@ public class CommentControllerSecurityTest {
 
         String commentRequestJson = objectMapper.writeValueAsString(commentRequest);
 
-        MvcResult result = mockMvc.perform(post("/comments")
+        // Crear comentario con POST sin esperar un ID en la respuesta
+        mockMvc.perform(post("/comments")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(commentRequestJson)
+                        .header("Authorization", "Bearer " + userAuthToken))
+                .andExpect(status().isOk());
+
+        // Obtener el comentario recién creado con GET para capturar su ID
+        MvcResult getResult = mockMvc.perform(get("/comments/post/{postId}", postId)
+                        .param("page", "0")
+                        .param("size", "1")
                         .header("Authorization", "Bearer " + userAuthToken))
                 .andExpect(status().isOk())
                 .andReturn();
 
-        // Intentar extraer el ID del comentario creado
-        Long commentId;
-        String responseContent = result.getResponse().getContentAsString();
-        if (responseContent != null && !responseContent.isEmpty()) {
-            commentId = JsonPath.parse(responseContent).read("$.id", Long.class);
-        } else {
-            // Asignar un ID de comentario fijo en caso de que la respuesta esté vacía
-            commentId = 1L;
-        }
+        // Extraer el ID del comentario del JSON de respuesta
+        Long commentId = JsonPath.parse(getResult.getResponse().getContentAsString()).read("$.content[0].id", Long.class);
 
         // Crear payload para la actualización del comentario
         CommentUpdateDto commentUpdate = new CommentUpdateDto();
@@ -165,12 +166,21 @@ public class CommentControllerSecurityTest {
 
         String commentUpdateJson = objectMapper.writeValueAsString(commentUpdate);
 
+        // Llamar al método PUT para actualizar el comentario
         mockMvc.perform(put("/comments/" + commentId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(commentUpdateJson)
                         .header("Authorization", "Bearer " + userAuthToken))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content").value("Updated comment content"))
+                .andExpect(jsonPath("$.id").value(commentId))
+                .andExpect(jsonPath("$.userId").value(userId))
+                .andExpect(jsonPath("$.postId").value(postId));
     }
+
+
+
+
 
     @Test
     public void likeComment() throws Exception {
@@ -202,27 +212,35 @@ public class CommentControllerSecurityTest {
 
     @Test
     public void deleteComment() throws Exception {
+        // Crear el comentario
         String commentContent = "Test comment for deletion feature";
         Map<String, Object> requestBody = new HashMap<>();
         requestBody.put("content", commentContent);
         requestBody.put("userId", userId);
         requestBody.put("postId", postId);
 
-        MvcResult createCommentResult = mockMvc.perform(post("/comments")
+        mockMvc.perform(post("/comments")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestBody))
+                        .header("Authorization", "Bearer " + userAuthToken))
+                .andExpect(status().isOk());
+
+        // Obtener el comentario recién creado para capturar el `commentId`
+        MvcResult getResult = mockMvc.perform(get("/comments/post/{postId}", postId)
+                        .param("page", "0")
+                        .param("size", "1")
                         .header("Authorization", "Bearer " + userAuthToken))
                 .andExpect(status().isOk())
                 .andReturn();
 
-        String responseBody = createCommentResult.getResponse().getContentAsString();
-        Long commentId = (responseBody != null && !responseBody.isEmpty()) ?
-                JsonPath.parse(responseBody).read("$.id", Long.class) : 1L;
+        Long commentId = JsonPath.parse(getResult.getResponse().getContentAsString()).read("$.content[0].id", Long.class);
 
+        // Llamar al método DELETE para eliminar el comentario
         mockMvc.perform(delete("/comments/{commentId}", commentId)
                         .header("Authorization", "Bearer " + userAuthToken))
                 .andExpect(status().isNoContent());
     }
+
 
     @Test
     public void getCommentsByPostId() throws Exception {

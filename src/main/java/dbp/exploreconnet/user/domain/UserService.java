@@ -64,6 +64,7 @@ public class UserService {
         }
 
         user.setRole(Role.valueOf(userRequestDto.getRole().toUpperCase()));
+
         userRepository.save(user);
         return convertToDto(user);
     }
@@ -97,15 +98,19 @@ public class UserService {
     public UserResponseDto updateUserByEmail(String email, UserRequestDto userRequestDto) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + email));
+
         user.setFullName(userRequestDto.getFullName());
+
         String newPassword = userRequestDto.getPassword();
         if (!passwordEncoder.matches(newPassword, user.getPassword())) {
             user.setPassword(passwordEncoder.encode(newPassword));
         }
+
         user.setRole(Role.valueOf(userRequestDto.getRole().toUpperCase()));
         userRepository.save(user);
         return mapToUserResponseDto(user);
     }
+
 
     public UserResponseDto updateProfilePhoto(Long id, MultipartFile profilePhoto) throws FileUploadException {
         User user = userRepository.findById(id)

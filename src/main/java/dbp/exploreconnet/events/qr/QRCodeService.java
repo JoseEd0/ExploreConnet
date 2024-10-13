@@ -5,26 +5,25 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.CompletableFuture;
+
 @Service
 public class QRCodeService {
 
     private static final String QR_API_URL = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=";
 
-
     @Async
-    public String generateQRCodeUrl(Long id, String date, int numberOfPeople, String placeName, String userName) {
+    public CompletableFuture<String> generateQRCodeUrl(Long id, String date, int numberOfPeople, String placeName, String userName) {
         ReservationData data = new ReservationData(id, date, numberOfPeople, placeName, userName);
 
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             String jsonData = objectMapper.writeValueAsString(data);
-
             String encodedData = URLEncoder.encode(jsonData, StandardCharsets.UTF_8.toString());
-
-            return QR_API_URL + encodedData;
+            return CompletableFuture.completedFuture(QR_API_URL + encodedData);
         } catch (Exception e) {
             e.printStackTrace();
-            return null;
+            return CompletableFuture.completedFuture(null);
         }
     }
 
@@ -41,8 +40,6 @@ public class QRCodeService {
             this.numberOfPeople = numberOfPeople;
             this.placeName = placeName;
             this.userName = userName;
-
-
         }
     }
 }

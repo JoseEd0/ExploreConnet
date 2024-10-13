@@ -43,7 +43,7 @@ public class ReservationController {
         return ResponseEntity.ok(reservationService.getReservationById(id));
     }
 
-    @PreAuthorize("hasAuthority('OWNER')")
+    @PreAuthorize("hasAuthority('USER')")
     @PutMapping("/{id}")
     public ResponseEntity<Reservation> updateReservation(@PathVariable Long id, @RequestBody Reservation reservation) {
         return ResponseEntity.ok(reservationService.updateReservation(id, reservation));
